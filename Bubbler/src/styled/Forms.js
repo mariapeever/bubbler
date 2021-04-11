@@ -24,7 +24,7 @@ export const Input = styled.TextInput`
 	padding: 0 13px;
 	border-radius: 4px;
 	font-size: 16px;
-	background-color: ${(props: StyledProps) => props.theme && props.theme.background.fadedWhite};
+	background-color: ${(props: StyledProps) => props.theme && props.theme.background.white};
 	align-items: center;
 	align-content: center;
 	justify-content: center;
