@@ -38,7 +38,7 @@ export const SectionButtonTitle = styled(ButtonTitle)`
 `
 
 export const SectionButton = styled.TouchableOpacity`
-	height: 39px;
+	height: 52px;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
