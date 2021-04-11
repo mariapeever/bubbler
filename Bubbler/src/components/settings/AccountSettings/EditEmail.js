@@ -18,6 +18,8 @@ import {
   Page,
   Input } from '../../../styled'
 
+import SettingsHeader from '../SettingsHeader'
+
 const EditMobileScreen = ({ navigation }) => {
 
   const user = selectUser()
@@ -65,6 +67,7 @@ const EditMobileScreen = ({ navigation }) => {
 
   return(
     <>
+      <SettingsHeader />
       <Page>
         <Input
           id='email'

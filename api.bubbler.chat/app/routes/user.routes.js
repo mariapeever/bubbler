@@ -20,7 +20,6 @@ module.exports = app => {
 	router.get('/:id', utils.reqAuth, usersValidator.findOne, usersController.findOne);
 	// Update a single user by id
 	router.put('/update/:id', utils.reqAuth, usersValidator.updateOne, usersController.updateOne);
-	
 
 	app.use('/api/users', router);
 };

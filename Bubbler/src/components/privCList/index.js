@@ -1,4 +1,4 @@
 'use strict'
-import PrivCList from './PrivCList'
+import PrivCListNav from './PrivCListNav'
 
-export { PrivCList }
+export { PrivCListNav as PrivCList }

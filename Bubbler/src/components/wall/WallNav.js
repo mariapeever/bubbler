@@ -18,7 +18,8 @@ const WallNav = () => {
 	 		initialRouteName="Wall"
 	 		screenOptions={{
 				headerStatusBarHeight: 39,
-	    		headerStyle: { height: 91 }
+	    		headerStyle: { height: 91 },
+	    		headerTransparent: true
 			}} >
 	 		<Stack.Screen 
 	    		name="Wall" 

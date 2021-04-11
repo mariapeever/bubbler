@@ -6,12 +6,17 @@ Ionicons.loadFont()
 import { View, Text } from 'react-native';
 
 import { Container } from '../../common'
+import { Page } from '../../../styled'
 
+import SettingsHeader from '../SettingsHeader'
 const ProfileSettingsScreen = () => {
 	return(
-		<View>
-			<Text>Profile settings</Text>
-		</View>
+		<>	
+			<SettingsHeader />
+			<Page>
+				<Text>Profile settings</Text>
+			</Page>
+		</>
 	);
 }
 

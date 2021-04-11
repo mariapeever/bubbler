@@ -8,14 +8,10 @@ interface StyledProps {
 }
 
 export const PageHeader = styled.View`
-	width: 100%;
-	padding: 13px 26px;
-	line-height: 26px;
-	align-items: flex-end;
-	align-content: flex-end;
-	justify-content: space-between;
-	background-color: ${(props: StyledProps) => props.theme && props.theme.background.mainHighlight};
-	height: 52px;
+	margin-top: -48px;
+	opacity: .9;
+	background-color: ${(props: StyledProps) => props.theme && props.theme.background.fadedWhite};
+	height: 91px;
 `
 
 

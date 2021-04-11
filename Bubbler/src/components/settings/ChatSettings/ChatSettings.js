@@ -6,13 +6,18 @@ Ionicons.loadFont()
 import { View, Text } from 'react-native';
 
 import { Container } from '../../common'
+import { Page } from '../../../styled'
 
+import SettingsHeader from '../SettingsHeader'
 
 const ChatSettingsScreen = () => {
 	return(
-		<View>
-			<Text>Chat Settings</Text>
-		</View>
+		<>	
+			<SettingsHeader />
+			<Page>
+				<Text>Chat Settings</Text>
+			</Page>
+		</>
 	);
 }
 

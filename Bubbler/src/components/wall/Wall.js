@@ -24,7 +24,6 @@ const WallScreen = ({ navigation }) => {
 const Wall = ({ navigation }) => {
   
   return(
-    
   	<Container screen={<WallScreen navigation={ navigation }/>} />
   )
 }

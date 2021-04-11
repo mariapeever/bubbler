@@ -1,11 +1,13 @@
 const config = require("../config/app.config");
 
 const { 
-	createPrivCList 
+	createPrivCList,
+	findOnePrivCList,
+	findOneAndUpdatePrivCList
 } = require('./privc-list.model.controller.js');
 
 const { 
-	findOneAndUpdateUser 
+	findOneAndUpdateUser
 } = require('./user.model.controller.js');
 
 exports.create = async (req, res) => {
@@ -22,8 +24,31 @@ exports.create = async (req, res) => {
 	var privCList = await createPrivCList(privCListObj, res);
 
 	var user = await findOneAndUpdateUser(auth.user, {
-		privateChats: privCList._id;
+		privateChats: privCList._id
 	}, res);
+
+	res.json(privCList);
+};
+
+exports.findOne = async (req, res) => {
+	console.log('findOne')
+	var id = req.sanitize(req.params.id);
+	var privCList = await findOnePrivCList(id, res);
+	console.log('privCList',privCList)
+	res.json(privCList);
+};
+
+exports.updateOne = async (req, res) => {
+	var id = req.sanitize(req.params.id);
+
+	var privCListObj = {};
+	for (let [key, val] of Object.entries(obj)) {
+		if(req.body[key] && status.contains(key)) {
+			privCListObj[key] = val.forEach(e => req.sanitize(e));
+		}
+	}
+
+	var privCList = await findOneAndUpdatePrivCList(id, privCListObj, res);
 
 	res.json(privCList);
 };

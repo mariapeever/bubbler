@@ -29,7 +29,7 @@ export const ButtonTitle = styled.Text`
 `
 
 export const IconButtonTitle = styled(ButtonTitle)`
-	margin-left: 13px;
+	margin-left: 13px;	
 	color: ${(props: StyledProps) => props.theme && props.theme.color.body};
 `
 
@@ -38,6 +38,7 @@ export const SectionButtonTitle = styled(ButtonTitle)`
 `
 
 export const SectionButton = styled.TouchableOpacity`
+	height: 39px;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -46,15 +47,33 @@ export const SectionButton = styled.TouchableOpacity`
 	border-bottom-width: 1px;
 	border-color: ${(props: StyledProps) => props.theme && props.theme.color.border};
 	line-height: 26px;
-	padding: 13px 26px;
+	padding: 7px 26px 6px;
 	background-color: ${(props: StyledProps) => props.theme && props.theme.background.white};
 `
 
 export const Icon = styled(Ionicons)`
 	font-size: 26px;
+	color: ${(props: StyledProps) => props.theme && props.theme.color.fadedMainHightlight};
+`
+
+export const IconButton = styled(Ionicons)`
+	font-size: 26px;
 	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHighlight};
 `
 
-
-
+export const WhiteIcon = styled(Ionicons)`
+	font-size: 26px;
+	line-height: 26px;
+	color: ${(props: StyledProps) => props.theme && props.theme.color.white};
+`
+export const IconBase = styled.View`
+	padding: 3px;
+	height: 39px;
+	width: 39px;
+	border-radius: 4px;
+	align-items: center;
+	align-content: center;
+	justify-content: center;
+	background-color: ${props => props.color ? props.theme.background[props.color] : props.theme.background.mainHighlight};
+`
 

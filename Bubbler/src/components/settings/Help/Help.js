@@ -6,12 +6,18 @@ Ionicons.loadFont()
 import { View, Text } from 'react-native';
 
 import { Container } from '../../common'
+import { Page } from '../../../styled'
+
+import SettingsHeader from '../SettingsHeader'
 
 const HelpScreen = () => {
 	return(
-		<View>
-			<Text>Help</Text>
-		</View>
+		<>
+			<SettingsHeader />
+			<Page>
+				<Text>Help</Text>
+			</Page>
+		</>
 	);
 }
 

@@ -11,7 +11,7 @@ module.exports = mongoose => {
 			blockedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 			removedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 			status: String, // active, inactive, deleted, blocked
-			messagesList: { type: Schema.Types.ObjectId, ref: 'PrivCParticMessagesList' }
+			messagesList: { type: Schema.Types.ObjectId, ref: 'PrivCParticMsgList' }
 		},
 	  	{ 
 	  		timestamps: 

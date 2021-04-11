@@ -1,13 +1,18 @@
 // Private chat mesasge view controller
-const { createPrivCMessage } = require('./privc-message.model.controller');
+const { 
+	createPrivCMessage ,
+	findOnePrivCMessage,
+	findPrivCMessages,
+	findOneAndUpdatePrivCMessage
+} = require('./privc-message.model.controller');
 const { findOneAuth } = require('./auth.model.controller');
-const { findOnePrivateChat } = require('./private-chat.model.controller');
+const { findOnePrivateChat, findOneAndUpdatePrivateChat } = require('./private-chat.model.controller');
 const { findOnePrivCParticipant } = require('./privc-participant.model.controller');
 const { 
-	findOnePrivCMessagesList, 
-	createPrivCMessagesList,
-	updateOnePrivCMessagesList
-} = require('./privc-messages-list.model.controller');
+	findOnePrivCMsgList, 
+	createPrivCMsgList,
+	findOneAndUpdatePrivCMsgList
+} = require('./privc-msg-list.model.controller');
 
 exports.create = async (req, res) => {
 	var auth = await findOneAuth(req.session.authId, res);
@@ -36,23 +41,55 @@ exports.create = async (req, res) => {
 	var privateChatId = req.sanitize(req.body.privateChat);
 	var privateChat = await findOnePrivateChat(privateChatId, res);
 
-	var messagesList;
 	if (!privateChat.messagesList) {
-		messagesList = await createPrivCMessagesList({
-			pending: [message._id]
+		var messagesList = await createPrivCMsgList({
+			ok: [message._id]
 		}, res);
-		privateChat.messagesList = messagesList._id;
+
+		findOneAndUpdatePrivateChat(privateChat._id, {
+			messagesList: messagesList._id
+		})
 	} else {
-		messagesList = await findOnePrivCMessagesList(
-			privateChat.messagesList, res);
-		messagesList.pending.push(message._id);
-		
-		await updateOnePrivCMessagesList(privateChat.messagesList, {
-			ok: messagesList.ok
-		}, res);
-	}	
+		var messagesList = await findOnePrivCMsgList(privateChat.messagesList)
+		messagesList.ok.push(message._id);
+		findOneAndUpdatePrivCMsgList(privateChat.messagesList, messagesList, res);
+	}
 
 	// send pending messages
 
 	res.json(message);
 };
+
+exports.findOne = async (req, res) => {
+
+	var id = req.sanitize(req.params.id);
+	var privCMessage = await findOnePrivCMessage(id, res);
+	res.json(privCMessage);
+};
+
+exports.find = async (req, res) => {
+	
+	var ids = req.query.ids;
+	ids = ids.split(',');
+	ids.forEach(id => req.sanitize(id));
+
+	var privCMessages = await findPrivCMessages(ids, res);
+	res.json(privCMessages);
+};
+
+exports.updateOne = async (req, res) => {
+
+	var privCMessageObj = {};
+	// sanitize
+	for (let [key, val] of Object.entries(req.body)) {
+		if(config.FIELDS.PRIVC_MESSAGE.includes(key)) {
+			privCMessageObj[key] = req.sanitize(val);
+		}
+	}
+	
+	var id = req.sanitize(req.params.id);
+	var privCMessage = await findOneAndUpdatePrivCMessage(id, privCMessageObj, res);
+
+	res.json(privCMessage);
+};
+

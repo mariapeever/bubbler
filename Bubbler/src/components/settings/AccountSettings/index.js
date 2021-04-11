@@ -1,4 +1,3 @@
-import AccountSettingsNav from './AccountSettingsNav'
 import AccountSettingsMenu from './AccountSettingsMenu'
 import EditPersonalDetails from './EditPersonalDetails'
 import EditEmail from './EditEmail'

@@ -25,3 +25,36 @@ exports.findOnePrivCMessage = async (id, res) => {
 				res.status(500).send({ message: err });
 			});
 };
+
+exports.findPrivCMessages = async (ids, res) => {
+	var cond = { _id: { $in: ids } };
+	return await PrivCMessage.find(cond)
+		.then(msgs => {
+			try {
+				if (!msgs) throw 'Private chat messages not found.';
+				return msgs;
+			} catch {
+				res.status(404).send({ message: 'Not found' });
+			}
+			return msgs
+		})
+			.catch(err => {
+				res.status(500).send({ message: err });
+			});
+};
+
+exports.findOneAndUpdatePrivCMessage = async (id, obj, res) => {
+
+	return await PrivCMessage.findByIdAndUpdate(id, obj, { new: true, useFindAndModify: false })
+		.then(privCMessage => {
+			try {
+				if (!privCMessage) throw 'Private chat message not found.';
+				return privCMessage;
+			} catch (err) {
+				res.status(404).send({ message: err });
+			}
+		})
+		.catch(err => {
+			res.status(500).send({ message: err });
+		});
+};

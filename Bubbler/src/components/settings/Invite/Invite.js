@@ -6,12 +6,18 @@ Ionicons.loadFont()
 import { View, Text } from 'react-native';
 
 import { Container } from '../../common'
+import { Page } from '../../../styled'
+
+import SettingsHeader from '../SettingsHeader'
 
 const InviteScreen = () => {
 	return(
-		<View>
-			<Text>Invite</Text>
-		</View>
+		<>
+			<SettingsHeader />
+			<Page>
+				<Text>Invite</Text>
+			</Page>
+		</>
 	);
 }
 

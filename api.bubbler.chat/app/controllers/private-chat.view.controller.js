@@ -2,19 +2,21 @@ const config = require("../config/app.config");
 
 const { 
 	findOnePrivateChat,
-	createPrivateChat 
+	createPrivateChat,
+	findPrivateChats,
+	findOneAndUpdatePrivateChat
 } = require('./private-chat.model.controller');
 
 const { findOneAuth } = require('./auth.model.controller');
 
-const { findOneUser } = require('./user.model.controller');
+const { findOneUser, findOneAndUpdateUser } = require('./user.model.controller');
 
 const { createRole } = require('./role.model.controller');
 
 const {
 	createPrivCList,
 	findOnePrivCList,
-	updateOnePrivCList
+	findOneAndUpdatePrivCList
 } = require('./privc-list.model.controller');
 
 const { 
@@ -22,8 +24,8 @@ const {
 } = require('./privc-participant.model.controller');
 
 const { 
-	createPrivCParticipantsList 
-} = require('./privc-participants-list.model.controller');
+	createPrivCParticList 
+} = require('./privc-partic-list.model.controller');
 
 exports.create = async (req, res) => {
 	// sanitize fields
@@ -43,21 +45,18 @@ exports.create = async (req, res) => {
 	}
 
 	var auth = await findOneAuth(req.session.authId, res);
-	console.log('auth',auth);
 	var adminRole = await createRole({
 		name: "admin",
 		privileges: config.PRIVATE_CHAT.ROLES.ADMIN
 	}, res);
-	console.log('adminRole',adminRole);
 	var admin = await findOneUser(auth.user, res);
-	console.log('admin',admin);
+	console.log('admin',admin)
 	// create PrivateChatParticipant for admin
 	var chatAdmin = await createPrivCParticipant({
 		user: auth.user,
 		role: adminRole._id,
 		status: "active"
 	}, res);
-	console.log('chatAdmin',chatAdmin);
 	var participants = {};
 
 	participants.admin = [chatAdmin._id];
@@ -77,7 +76,6 @@ exports.create = async (req, res) => {
 					name: keyLower,
 					privileges: val
 			}, res);
-			console.log('role',role);
 			if(privCParticipants[keyLower]) {
 				participants[keyLower] = [];
 				for (var i = 0; i < privCParticipants[keyLower].length; i++) {
@@ -89,40 +87,43 @@ exports.create = async (req, res) => {
 						role: role._id,
 						status: key == "ADMIN" ? "active" : "invited"
 					}, res);
-					console.log('privCParticipant',privCParticipant);
 					participants[keyLower].push(privCParticipant._id);
 				}	
 			} 
 		}
 	}
 
-	var privCParticipantsList = await createPrivCParticipantsList(participants, res);
-	console.log('privCParticipantsList',privCParticipantsList);
-	privCObj.participantsList = privCParticipantsList._id;
+	var privCParticList = await createPrivCParticList(participants, res);
+	privCObj.participantsList = privCParticList._id;
 
 	var privateChat = await createPrivateChat(privCObj, res);
 	// Notify participants !!!
-	console.log('privateChat',privateChat);
-	if (!admin.privCList) {
+	console.log('admin.privateChats',admin.privateChats)
+	if (!admin.privateChats) {
+
 		var privCList = await createPrivCList({
 			active: [{
 				privateChat: privateChat._id, 
 				participant: chatAdmin._id
 			}]
 		}, res);
-		console.log('privCList',privCList);
+		findOneAndUpdateUser(admin.id, {
+			privateChats: privCList._id
+		})
+
 	} else {
-		var privCList = await findOnePrivCList(user.privCList, res);
+		console.log('admin.privateChats',admin.privateChats)
+		var privCList = await findOnePrivCList(admin.privateChats, res);
 		privCList.active.push({
-				privateChat: privateChat._id, 
-				participant: chatAdmin._id
+			privateChat: privateChat._id, 
+			participant: chatAdmin._id
 		});
-		console.log('privCList',privCList);
-		await updateOnePrivCList(user.privCList, {
+		console.log('privCList1',privCList)
+		findOneAndUpdatePrivCList(admin.privateChats, {
 			active: privCList.active
 		}, res);
-		var privCList2 = await findOnePrivCList(user.privCList, res);
-		console.log('privCList2',privCList2);
+		var privCList2 = await findOnePrivCList(admin.privateChats, res);
+		console.log('privCList2',privCList2)
 	}
 
 	res.json(privateChat);
@@ -136,3 +137,32 @@ exports.findOne = async (req, res) => {
 	res.json(privateChat);
 };
 
+exports.find = async (req, res) => {
+	if (!req.query.ids) {
+		return res.status(400).send({
+			message: 'Ids must not be empty.'
+		});
+	}
+	var ids = req.query.ids;
+	ids = ids.split(',');
+	ids.forEach(id => req.sanitize(id));
+
+	var privateChats = await findPrivateChats(ids, res);
+	res.json(privateChats);
+};
+
+exports.updateOne = async (req, res) => {
+
+	var privateChatObj = {};
+	// sanitize
+	for (let [key, val] of Object.entries(req.body)) {
+		if(config.FIELDS.PRIVATE_CHAT.includes(key)) {
+			privateChatObj[key] = req.sanitize(val);
+		}
+	}
+	
+	var id = req.sanitize(req.params.id);
+	var privateChat = await findOneAndUpdatePrivateChat(id, privateChatObj, res);
+
+	res.json(privateChat);
+};

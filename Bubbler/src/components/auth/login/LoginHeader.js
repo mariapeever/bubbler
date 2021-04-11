@@ -8,9 +8,7 @@ import { Header } from '../../common';
 
 const ScreenHeader = () => {
   return (
-  	<PageHeader>
-  		
-  	</PageHeader>
+  	<PageHeader></PageHeader>
   )
 }
 

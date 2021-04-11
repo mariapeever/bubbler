@@ -17,7 +17,7 @@ exports.create = async (req, res) => {
 	var plainPassword = req.sanitize(req.body.password);
 	
 	const bcrypt = require('bcrypt');
-  const saltRounds = 10;
+  	const saltRounds = 10;
 
  	// hash the password and save user data
 	bcrypt.hash(plainPassword, saltRounds, async (err, hashedPassword) => {
@@ -26,8 +26,9 @@ exports.create = async (req, res) => {
 		var firstName = req.sanitize(req.body.firstName);
 		var lastName = req.sanitize(req.body.lastName);
 		var email = req.sanitize(req.body.email);
-		var dob = req.sanitize(req.body.dob);
 		var mobile = req.body.mobile ? req.sanitize(req.body.mobile) : "";
+		var dob = req.sanitize(req.body.dob);
+		// var image =
 		var privacy = config.PRIVACY.USER
 
 		var user = await createUser({ 
@@ -55,7 +56,7 @@ exports.create = async (req, res) => {
 			password: hashedPassword
 		}, res);
 
-		res.json({ user: user, auth: auth });
+		res.json({user});
 	});
 };
 
@@ -93,6 +94,7 @@ exports.findOne = async (req, res) => {
 	
 	var id = req.sanitize(req.params.id);
 	var user = await findOneUser(id, res);
+	console.log(user)
 	res.json(user);
 
 };

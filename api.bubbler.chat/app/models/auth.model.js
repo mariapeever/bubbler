@@ -4,6 +4,7 @@ module.exports = mongoose => {
 	var authSchema = new Schema(
 		{	
 			user: { type: Schema.Types.ObjectId, ref: 'User' },
+			ip: String,
 			username: String,
 	    	password: String,
 	    	passwordStrength: Number, // calc password strength

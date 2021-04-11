@@ -20,7 +20,7 @@ exports.MEDIA = {
 		'published', 
 		'hidden', 
 		'archived', 
-		'deleted'
+		'deleted',
 	]
 };
 
@@ -30,7 +30,7 @@ exports.PRIVATE_CHAT = {
 		'active', 
 		'hidden', 
 		'archived', 
-		'deleted'
+		'deleted',
 	],
 	PP_STATUS:
 	[
@@ -39,7 +39,7 @@ exports.PRIVATE_CHAT = {
 		'pending',
 		'inactive',
 		'flagged',
-		'blocked'
+		'blocked',
 	],
 	ROLES:
 	{
@@ -54,7 +54,7 @@ exports.PRIVATE_CHAT = {
 			'share',
 			'delete-media',
 			'update-chat-settings',
-			'delete-chat'
+			'delete-chat',
 		],
 		ACTIVE:
 		[
@@ -62,11 +62,11 @@ exports.PRIVATE_CHAT = {
 			'send-receive-messages',
 			'add-media',
 			'react',
-			'share'
+			'share',
 		],
 		PENDING:
 		[
-			'join-chat'
+			'join-chat',
 		],
 		INACTIVE: [],
 		FLAGGED: 
@@ -75,7 +75,7 @@ exports.PRIVATE_CHAT = {
 			'send-receive-messages',
 			'add-media',
 			'react',
-			'share'
+			'share',
 		],
 		BLOCKED: []
 
@@ -90,7 +90,21 @@ exports.FIELDS = {
 		'email',
 		'dob',
 		'mobile',
-		'status'	
+		'status',	
+	],
+	PRIVATE_CHAT: 
+	[
+		'title',
+		'description',
+		'participantsList',
+		'callsList',
+		'messagesList',
+		'imagesList',
+		'videosList',
+		'linksList', 
+		'locationsList', 
+		'documentsList',
+		'shares',
 	]
 };
 

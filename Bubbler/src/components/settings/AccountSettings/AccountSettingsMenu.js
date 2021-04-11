@@ -29,7 +29,7 @@ import {
 } from '../../../styled'
 
 
-import AccountSettingsMenuHeader from './AccountSettingsMenuHeader'
+import SettingsHeader from '../SettingsHeader'
 
 const AccountSettingsMenuScreen = ({ navigation }) => {
 
@@ -45,34 +45,36 @@ const AccountSettingsMenuScreen = ({ navigation }) => {
 
 	useEffect(() => {
 	  // Subscribe for the focus Listener
-	  navigation.addListener('focus', async () => {
+	  const unsubscribe = navigation.addListener('focus', async () => {
 	  	const user = selectUser()
-			setFirstName(user.firstName)
-			setLastName(user.lastName)
-			setEmail(user.email)
+		setFirstName(user.firstName)
+		setLastName(user.lastName)
+		setEmail(user.email)
 	  })
-
+	  return unsubscribe
 	}, [navigation])
 
 	return(
-		<Page>
-			<SectionTitle>Personal Details</SectionTitle>
-			<SectionButton onPress={() => navigation.push('EditPersonalDetails')}>
-				<SectionButtonTitle>{firstName} {lastName}</SectionButtonTitle>
-			</SectionButton>
-			<SectionTitle>Email</SectionTitle>
-			<SectionButton onPress={() => navigation.push('EditEmail')}>
-				<SectionButtonTitle>{email}</SectionButtonTitle>
-			</SectionButton>
-			<SectionButton onPress={() => navigation.push('EditEmail')}>
-				<SectionButtonTitle>Chat</SectionButtonTitle>
-			</SectionButton>
-			<SectionTitle>Mobile</SectionTitle>
-			<SectionButton onPress={() => navigation.navigate('EditMobile')}>
-				<SectionButtonTitle>Profile</SectionButtonTitle>
-			</SectionButton>
-		</Page>
-
+		<>
+			<SettingsHeader />
+			<Page>
+				<SectionTitle>Personal Details</SectionTitle>
+				<SectionButton onPress={() => navigation.push('EditPersonalDetails')}>
+					<SectionButtonTitle>{firstName} {lastName}</SectionButtonTitle>
+				</SectionButton>
+				<SectionTitle>Email</SectionTitle>
+				<SectionButton onPress={() => navigation.push('EditEmail')}>
+					<SectionButtonTitle>{email}</SectionButtonTitle>
+				</SectionButton>
+				<SectionButton onPress={() => navigation.push('EditEmail')}>
+					<SectionButtonTitle>Chat</SectionButtonTitle>
+				</SectionButton>
+				<SectionTitle>Mobile</SectionTitle>
+				<SectionButton onPress={() => navigation.navigate('EditMobile')}>
+					<SectionButtonTitle>Profile</SectionButtonTitle>
+				</SectionButton>
+			</Page>
+		</>
 	);
 }
 
@@ -83,4 +85,4 @@ const AccountSettingsMenu = ({ navigation }) => {
   )
 }
 
-export default AccountSettingsMenu;
+export default AccountSettingsMenu

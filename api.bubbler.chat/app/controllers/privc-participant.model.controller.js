@@ -17,7 +17,7 @@ exports.findOnePrivCParticipant = async (id, res) => {
 	return await PrivCParticipant.findById(id)
 		.then(partic => {
 			try {
-				if (!partic) throw 'Participant not found';
+				if (!partic) throw 'Participant not found.';
 				return partic;
 			} catch {
 				res.status(404).send({ message: err });
@@ -27,3 +27,21 @@ exports.findOnePrivCParticipant = async (id, res) => {
 				res.status(500).send({ message: err });
 			});
 }
+
+exports.findPrivCParticipants = async (ids, res) => {
+	
+	var cond = { _id: { $in: ids } };
+	return await PrivCParticipant.find(cond)
+		.then(participants => {
+			try {
+				if (!participants) throw 'Private chat participants not found.';
+				return participants;
+			} catch {
+				res.status(404).send({ message: 'Not found' });
+			}
+			return data
+		})
+			.catch(err => {
+				res.status(500).send({ message: err });
+			});
+};

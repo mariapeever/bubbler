@@ -3,7 +3,7 @@ import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons' 
 Ionicons.loadFont()
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack'
 
 import SettingsMenu from './SettingsMenu'
 
@@ -20,7 +20,7 @@ import {
 	EditEmail,
 	EditMobile } from './AccountSettings'
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator()
 
 const SettingsNav = () => {
 	return(
@@ -28,7 +28,8 @@ const SettingsNav = () => {
 	 		initialRouteName="SettingsMenu" 
 	 		screenOptions={{
 				headerStatusBarHeight: 39,
-	    		headerStyle: { height: 91 }
+	    		headerStyle: { height: 91 },
+	    		headerTransparent: true
 			}}>
 	 		<Stack.Screen 
 	 			name="SettingsMenu" 
@@ -90,4 +91,4 @@ const SettingsNav = () => {
 	);
 }
 
-export default SettingsNav;
+export default SettingsNav

@@ -20,7 +20,7 @@ function Nav(props, { navigation }) {
     <Tab.Navigator
       initialRouteName="Wall"
       tabBarOptions={{
-        activeTintColor: Theme.color.mainHighlight,
+        activeTintColor: Theme.color.mainHighlight
       }}
     >
       <Tab.Screen

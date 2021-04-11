@@ -19,6 +19,8 @@ import {
   Input, 
   DateInput } from '../../../styled'
 
+import SettingsHeader from '../SettingsHeader'
+
 const EditPersonalDetailsScreen = ({ navigation }) => {
 
   const user = selectUser()
@@ -53,12 +55,12 @@ const EditPersonalDetailsScreen = ({ navigation }) => {
             dob
           })
         )
-
         setAddRequestStatus('success')
         
         dispatch(
           userUpdated(resultAction)
         )        
+
         navigation.goBack()
         
       } catch (err) {
@@ -72,6 +74,7 @@ const EditPersonalDetailsScreen = ({ navigation }) => {
 
   return(
     <>
+      <SettingsHeader />
       <Page>
         <Input
           id='firstName'

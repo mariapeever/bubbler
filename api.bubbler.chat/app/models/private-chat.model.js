@@ -5,9 +5,9 @@ module.exports = mongoose => {
 		{	
 			title: String,
 			description: String,
-			participantsList: { type: Schema.Types.ObjectId, ref: 'PrivCParticipantsList' },
+			participantsList: { type: Schema.Types.ObjectId, ref: 'PrivCParticList' },
 			callsList: { type: Schema.Types.ObjectId, ref: 'PrivCCallsList' },
-			messagesList: { type: Schema.Types.ObjectId, ref: 'PrivCMessagesList' },
+			messagesList: { type: Schema.Types.ObjectId, ref: 'PrivCMsgList' },
 			imagesList: { type: Schema.Types.ObjectId, ref: 'ImagesList' },
 			videosList: { type: Schema.Types.ObjectId, ref: 'VideosList' },
 			linksList: { type: Schema.Types.ObjectId, ref: 'LinksList' }, 

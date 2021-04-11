@@ -7,7 +7,7 @@
   * exports.update
   * exports.deleteOne
   */
-const {check, param, query, body, validationResult} = require('express-validator');
+const {check, param, query, body, oneOf, validationResult} = require('express-validator');
 
 exports.find = [
   query('ids.*').isMongoId(),
@@ -81,7 +81,10 @@ exports.updateOne = [[
   check('lastName')
     .not().isEmpty().withMessage('Last name must not be empty.')
     .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('Last name must be alphanumeric.'),
-  check('email').isEmail()],
+  oneOf([
+    check('email').isEmail().withMessage('Email must be a valid email or empty.'),
+    check('email').isEmpty()
+  ])],
   (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

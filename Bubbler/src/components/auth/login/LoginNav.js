@@ -3,7 +3,7 @@ import React from 'react';
 import { createStackNavigator, StackActions } from '@react-navigation/stack'
 
 import Login from './Login'
-
+import Theme from '../../../styled/Theme'
 import { SignUp } from '../signUp'
 import { Reset } from '../reset'
 import { Nav } from '../../nav'
@@ -16,7 +16,8 @@ const LoginNav = () => {
 	 		initialRouteName="Login"
 	 		screenOptions={{
 				headerStatusBarHeight: 39,
-	    		headerStyle: { height: 91 }
+	    		headerStyle: { height: 91 },
+	    		headerTransparent: true	
 			}} >
 	 		<Stack.Screen 
 	 			name="Login" 

@@ -1,3 +1,7 @@
 import SettingsNav from './SettingsNav'
+import SettingsHeader from './SettingsHeader'
 
-export { SettingsNav as Settings }
+export { 
+	SettingsNav as Settings,
+	SettingsHeader
+}

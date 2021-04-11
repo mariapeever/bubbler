@@ -53,7 +53,11 @@ app.use(express.static('public'));
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/private-chat.routes')(app);
+require('./app/routes/privc-list.routes')(app);
 require('./app/routes/privc-message.routes')(app);
+require('./app/routes/privc-msg-list.routes')(app);
+require('./app/routes/privc-participant.routes')(app);
+require('./app/routes/privc-partic-list.routes')(app);
 console.log('index');
 
 //////////////

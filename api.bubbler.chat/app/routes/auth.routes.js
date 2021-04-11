@@ -11,7 +11,7 @@ module.exports = app => {
 	// Logout
 	router.get('/logout', utils.reqAuth, authsController.logout);
 	// Find one
-	router.get('/:id', utils.reqAuth, authsValidator.findOne, authsController.findOne);
+	router.get('/:id', authsValidator.findOne, authsController.findOne);
 	// Update one
 	router.put('/update/:id', utils.reqAuth, authsValidator.updateOne, authsController.updateOne);
 	// Delete a single user by auth id

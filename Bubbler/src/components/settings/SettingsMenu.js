@@ -3,7 +3,6 @@ import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons' 
 Ionicons.loadFont()
 
-import { createStackNavigator } from '@react-navigation/stack';
 import { View, TouchableOpacity, Text } from 'react-native';
 
 import { Container } from '../common'
@@ -19,44 +18,69 @@ import { Invite } from './Invite'
 import { 
 	Page,
 	SectionButton,
-	Icon,
-	IconButtonTitle
+	WhiteIcon,
+	IconButtonTitle,
+	IconBase,
+	SectionTitle
 } from '../../styled'
 
-import SettingsMenuHeader from './SettingsMenuHeader'
+import SettingsHeader from './SettingsHeader'
 
 const SettingsMenuScreen = ({ navigation }) => {
 
 	return(
 		
 		<Page>
-			<SettingsMenuHeader />
-			<SectionButton onPress={() => navigation.navigate('AccountSettings')}>
-				<Icon name="person-circle-outline" />  
+			<SettingsHeader />
+			<SectionTitle>General</SectionTitle>
+			<SectionButton onPress={() => navigation.navigate('AccountSettings')} key='AccountSettings'>
+				<IconBase color='blue'>
+					<WhiteIcon name="person-circle-outline" />   
+				</IconBase>
+				
 				<IconButtonTitle>Account</IconButtonTitle>
 			</SectionButton>
-			<SectionButton onPress={() => navigation.navigate('ChatSettings')}>
-				<Icon name="chatbubble-ellipses-outline" />  
+			<SectionButton onPress={() => navigation.navigate('ChatSettings')} key='ChatSettings'>
+				<IconBase color='green'>
+					<WhiteIcon name="chatbubble-ellipses-outline" /> 
+				</IconBase>
+				
 				<IconButtonTitle>Chat</IconButtonTitle>
 			</SectionButton>
-			<SectionButton onPress={() => navigation.navigate('ProfileSettings')}>
-				<Icon name="person-outline" />  
+			<SectionButton onPress={() => navigation.navigate('ProfileSettings')} key='ProfileSettings'>
+				<IconBase color='purple'>
+					<WhiteIcon name="person-outline" />   
+				</IconBase>
+				
 				<IconButtonTitle>Profile</IconButtonTitle>
 			</SectionButton>
+
+			<SectionTitle>Privacy</SectionTitle>
 			<SectionButton onPress={() => navigation.navigate('PrivacySettings')}>
-				<Icon name="lock-closed-outline" />  
+				<IconBase color='red'>
+					<WhiteIcon name="lock-closed-outline" />  
+				</IconBase>
+				
 				<IconButtonTitle>Privacy</IconButtonTitle>
 			</SectionButton>
 			<SectionButton onPress={() => navigation.navigate('NotificationSettings')}>
-				<Icon name="notifications-outline" />  
+				<IconBase color='orange'>
+					<WhiteIcon name="notifications-outline" />  
+				</IconBase>
 				<IconButtonTitle>Notifications</IconButtonTitle>
 			</SectionButton>
+
+			<SectionTitle>About</SectionTitle>
 			<SectionButton onPress={() => navigation.navigate('Invite')}>
-				<Icon name="arrow-redo-outline" />  
+				<IconBase color='violet'>
+					<WhiteIcon name="arrow-redo-outline" />  
+				</IconBase>
 				<IconButtonTitle>Invite a friend</IconButtonTitle>
 			</SectionButton>
 			<SectionButton onPress={() => navigation.navigate('Help')}>
-				<Icon name="information-circle-outline" />  
+				<IconBase color='lightBlue'>
+					<WhiteIcon name="information-circle-outline" />  
+				</IconBase>
 				<IconButtonTitle>Help</IconButtonTitle>
 			</SectionButton>
 		</Page>
