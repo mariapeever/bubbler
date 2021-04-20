@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { selectPrivCMsgListById } from './privCMsgListsSlice'
 
 const initialState = {
-	privCMessages: [],
+	privCMessages: {},
 	status: 'idle',
 	error: null
 }
@@ -11,8 +11,8 @@ const status = ['ok','flagged','removed']
 
 export const fetchPrivCMessagesFromList = createAsyncThunk('PrivCMessages', async privCMsgList => {
 
-	let ids = privCMsgList.toString()
-	var url = `http://localhost:8000/api/privc-messages/find?ids=${ids}`
+	const ids = privCMsgList.toString()
+	const url = `http://localhost:8000/api/privc-messages/find?ids=${ids}`
 
 	return privCMessages = await fetch(url)
 	    .then(response => response.json())
@@ -26,8 +26,8 @@ export const fetchPrivCMessagesFromList = createAsyncThunk('PrivCMessages', asyn
 })
 
 export const fetchPrivCMessage = createAsyncThunk('privCMessages', async id => {
-
-	var url = `http://localhost:8000/api/privc-messages/${id}`
+	
+	const url = `http://localhost:8000/api/privc-messages/${id}`
 	return await fetch(url)
 	    .then(response => response.json())
 			.then(data => {
@@ -38,14 +38,18 @@ export const fetchPrivCMessage = createAsyncThunk('privCMessages', async id => {
 				}) 
 })
 
-export const createPrivCMessage = createAsyncThunk('privCMessages', async msg => {
-	return await fetch('http://localhost:8000/api/privc-messages/', {
+export const createPrivCMessage = createAsyncThunk('privCMessages', async message => {
+	// Create WebSocket connection.
+
+	const url = `http://localhost:8000/api/privc-messages/`
+
+	return await fetch(url, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(msg)
+        body: JSON.stringify(message)
     })
 	    .then(response => response.json())
 			.then(data => {
@@ -56,9 +60,9 @@ export const createPrivCMessage = createAsyncThunk('privCMessages', async msg =>
 				}) 
 })
 
-export const updatePrivCMessage = createAsyncThunk('privCMessages', async msg => {
+export const updatePrivCMessage = createAsyncThunk('privCMessages', async message => {
 
-	var url = `http://localhost:8000/api/privc-messages/update/${msg.id}`
+	const url = `http://localhost:8000/api/privc-messages/update/${msg.id}`
 	
 	return await fetch(url, {
         method: 'PUT',
@@ -66,7 +70,7 @@ export const updatePrivCMessage = createAsyncThunk('privCMessages', async msg =>
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(msg)
+        body: JSON.stringify(message)
     })
     .then(response => response.json())
 		.then(data => {
@@ -79,7 +83,6 @@ export const updatePrivCMessage = createAsyncThunk('privCMessages', async msg =>
 
 const constructor = e => {
 	return {
-		id: e._id,
 		participant: e.participant,
 		type: e.type,
 		content: e.content,
@@ -95,18 +98,18 @@ const constructor = e => {
 			link: e.link ? e.link : {},
 			contact: e.contact ? e.contact : {}
 		},
-		createdAt: e.created_at,
-		updatedAt: e.updated_at,
 		sent: e.sent ? e.sent : '',
 		received: e.received ? e.received : '',
-		seen: e.seen ? e.seen : ''
+		seen: e.seen ? e.seen : '',
+		createdAt: e.createdAt,
+		updatedAt: e.updatedAt,
 	}
 }
 
 const preparePrivCMessagesFromListPayload = (payload) => {
 	var privCMessages = {}
-	payload.forEach(msg => {
-		privCMessages[msg._id] = constructor(msg)
+	payload.forEach(e => {
+		privCMessages[e._id] = constructor(e)
 	})
 	return { payload: privCMessages }
 }
@@ -128,32 +131,32 @@ export const privCMessagesSlice = createSlice({
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCMessages: { ...currentState.privCMessages, ...action.payload }}
 		    },
-		    prepare(action) {
-		    	return preparePrivCMessagesFromListPayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivCMessagesFromListPayload(payload)
 		    }
 		},
 		privCMessageFetched: {
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCMessages: { ...currentState.privCMessages, ...action.payload } }
 		    },
-		    prepare(action) {
-		    	return preparePrivCMessagePayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivCMessagePayload(payload)
 		    }
 		},
 		privCMessageAdded: {
 			reducer(state, action) {
 		      	currentState = { ...currentState, privCMessages: { ...currentState.privateChats, ...action.payload } }
 		    },
-		    prepare(action) {
-		    	return preparePrivCMessagePayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivCMessagePayload(payload)
 		    }
 		},
 		privCMessageUpdated: {
 			reducer(state, action) {
 				currentState = { ...currentState, privCMessages: { ...currentState.privCMessages, ...action.payload } }
 			},
-			prepare(action) {
-				return preparePrivCMessagePayload(action.payload)
+			prepare(payload) {
+				return preparePrivCMessagePayload(payload)
 			}
 		}
 	},
@@ -165,11 +168,28 @@ export default privCMessagesSlice.reducer
 
 export const { privCMessagesFetchedFromList, privCMessageFetched, privCMessageAdded, privCMessageUpdated } = privCMessagesSlice.actions
 
-export const selectPrivCMessages = () => Object.values(currentState.privCMessages)
+export const selectPrivCMessages = () => {
+	return Object.entries(currentState.privCMessages).map(([key, value]) => {
+		return { ...value, id: key }
+	})
+}
 
-export const selectPrivCMessagesFromList = privCMsgList => privCMsgList.map(id => currentState.privCMessages[id])
+const snglMsgConstructor = id => {
+	return { ...currentState.privCMessages[id], id: id }
+}
 
-export const selectPrivCMessageById = id => currentState.privCMessages[id]
+export const selectPrivCMessagesFromList = privCMsgList => {
+	return privCMsgList.map(id => snglMsgConstructor(id))
+}
 
-export const selectLastMessageFromList = privCMsgList => currentState.privCMessages[privCMsgList[privCMsgList.length - 1]]
+export const selectPrivCMessageById = id => {
+	return snglMsgConstructor(id)
+}
+export const selectLastMessageFromList = privCMsgList => {
+	
+	let id = privCMsgList[privCMsgList.length - 1]
+	return snglMsgConstructor(id)
+}
+
+
 

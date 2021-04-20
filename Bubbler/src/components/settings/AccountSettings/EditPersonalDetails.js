@@ -6,7 +6,7 @@ import { unwrapResult } from '@reduxjs/toolkit'
 
 import { StackActions, CommonActions } from '@react-navigation/native'
 
-import { selectUser, fetchUser, userFetched, updateUser, userUpdated } from '../../../reducers/userSlice'
+import { selectUser, fetchUser, userFetched, updateUser, userUpdated } from '../../../reducers/usersSlice'
 
 import { Container } from '../../common'
 
@@ -23,8 +23,7 @@ import SettingsHeader from '../SettingsHeader'
 
 const EditPersonalDetailsScreen = ({ navigation }) => {
 
-  const user = selectUser()
-
+  const [user, setUser] = useState(selectUser())
   const [id, setId] = useState(user.id)
   
   const [firstName, setFirstName] = useState(user.firstName)
@@ -47,18 +46,19 @@ const EditPersonalDetailsScreen = ({ navigation }) => {
       try {
         setAddRequestStatus('pending')
 
-        const resultAction = await dispatch(
+        const updatedUser = await dispatch(
           updateUser({
           	id,
             firstName,
             lastName,
             dob
           })
-        )
+        ).then(unwrapResult)
+
         setAddRequestStatus('success')
-        
-        dispatch(
-          userUpdated(resultAction)
+
+        const loadedUser = await dispatch(
+          userUpdated(updatedUser)
         )        
 
         navigation.goBack()

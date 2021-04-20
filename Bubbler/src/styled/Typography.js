@@ -35,6 +35,10 @@ export const Span = styled.Text`
 	font-weight: 500;
 `
 
-export const WhiteText = styled(Body)`
-	color: ${(props: StyledProps) => props.theme && props.theme.color.white};
+export const BodyText = styled(Body)`
+	color: ${props => props.white ? props.theme.color.white : props.theme.color.body};
+`
+
+export const DarkText = styled(Body)`
+	color: ${props => props.self ? props.theme.color.white : props.theme.color.body};
 `

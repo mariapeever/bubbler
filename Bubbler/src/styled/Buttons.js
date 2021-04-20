@@ -53,7 +53,7 @@ export const SectionButton = styled.TouchableOpacity`
 
 export const Icon = styled(Ionicons)`
 	font-size: 26px;
-	color: ${(props: StyledProps) => props.theme && props.theme.color.fadedMainHightlight};
+	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHightlight};
 `
 
 export const IconButton = styled(Ionicons)`

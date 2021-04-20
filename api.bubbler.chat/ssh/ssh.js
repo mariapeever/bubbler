@@ -21,22 +21,25 @@ const server = new ssh2.Server({
     console.log('Client authenticated!');
     client.on('session', function(accept, reject) {
       var session = accept();
-
+      
       session.once('exec', function(accept, reject, info) {
-        console.log('Client wants to execute: ' + inspect(info.command));
+        console.log('Client wants to execute: ', inspect(info.command));
         var stream = accept();
-  
-        exec(`./exec.js ${info.command}`, {pty: true},  (error, stdout, stderr) => {
+      
+        exec(info.command, {pty: true},  (error, stdout, stderr) => {
           if (error) {
-            console.error(`exec error: ${error}`);
-            stream.stderr.write(`exec error: ${error}`);
+            // console.error(`exec error: ${error}`);
+            stream.stderr.write('ERROR');
+            // stream.stderr.write(`exec error: ${error}`);
             return;
           }
-          console.log(stdout);
+          // console.log(stdout);
           stream.write(stdout);
           stream.exit(0);
           stream.end();
         });
+      
+        
       });
     });
   })
@@ -52,7 +55,7 @@ const server = new ssh2.Server({
 });
 
 server.on('connection', (client, info) => {
-  console.log('Client :: Connection')
-  console.log(info)
+  console.log('Client :: Connection ::', info.ip)
+  // console.log(info)
 });
 

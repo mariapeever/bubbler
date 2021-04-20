@@ -4,9 +4,9 @@ const PrivCParticipant = db.privCParticipants;
 
 exports.createPrivCParticipant = async (obj, res) => {
 
-	var privCAdmin = new PrivCParticipant(obj);
+	var participant = new PrivCParticipant(obj);
 	// save admin
-	return await privCAdmin.save()
+	return await participant.save()
 		.catch(err => {
 			res.status(500).send({ message: err });
 		});

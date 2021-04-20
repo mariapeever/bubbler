@@ -24,7 +24,7 @@ export const Input = styled.TextInput`
 	padding: 0 13px;
 	border-radius: 4px;
 	font-size: 16px;
-	background-color: ${(props: StyledProps) => props.theme && props.theme.background.white};
+	background-color: ${(props: StyledProps) => props.theme && props.theme.background.fadedWhite};
 	align-items: center;
 	align-content: center;
 	justify-content: center;
@@ -57,13 +57,7 @@ export const InputBox = styled.View`
 	flex-direction: row;
 	width: 100%;
 	padding: 13px 0 13px 13px;
-	shadow-color: "#000",
-	shadow-offset: {
-		width: 2,
-		height: 2,
-	};
-	shadow-opacity: 0.1;
-	shadow-radius: 5px;	
+	
 	background-color: ${(props: StyledProps) => props.theme && props.theme.background.fadedWhite};
 
 `

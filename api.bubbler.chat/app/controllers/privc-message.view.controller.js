@@ -14,9 +14,10 @@ const {
 	findOneAndUpdatePrivCMsgList
 } = require('./privc-msg-list.model.controller');
 
-exports.create = async (req, res) => {
-	var auth = await findOneAuth(req.session.authId, res);
 
+exports.create = async (req, res) => {
+
+	var auth = await findOneAuth(req.session.authId, res);
 	var type = req.sanitize(req.body.type);
 	var content = req.sanitize(req.body.content);
 	if (req.body.attachments) {
@@ -40,12 +41,10 @@ exports.create = async (req, res) => {
 
 	var privateChatId = req.sanitize(req.body.privateChat);
 	var privateChat = await findOnePrivateChat(privateChatId, res);
-
 	if (!privateChat.messagesList) {
 		var messagesList = await createPrivCMsgList({
 			ok: [message._id]
 		}, res);
-
 		findOneAndUpdatePrivateChat(privateChat._id, {
 			messagesList: messagesList._id
 		})
@@ -54,7 +53,7 @@ exports.create = async (req, res) => {
 		messagesList.ok.push(message._id);
 		findOneAndUpdatePrivCMsgList(privateChat.messagesList, messagesList, res);
 	}
-
+	
 	// send pending messages
 
 	res.json(message);

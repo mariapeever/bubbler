@@ -1,16 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { StackActions } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 
+import { Buffer } from 'buffer'
 import { 
   login, 
+  selectUserId,
   userLoggedIn, 
   fetchUser,
-  anotherUserFetched,
-  selectUser } from '../../../reducers/userSlice'
+  fetchUsersFromList,
+  usersFetchedFromList,
+  selectUser } from '../../../reducers/usersSlice'
+
+import { 
+  fetchPrivCList, 
+  privCListFetched,  
+  selectPrivCList_Active,
+  selectPrivCList_Pending,
+  selectPrivCList_Hidden,
+  selectPrivCList_Archived } from '../../../reducers/privCListSlice'
 
 import { 
   fetchPrivateChatsFromList, 
@@ -18,14 +29,13 @@ import {
   selectPrivateChats } from '../../../reducers/privateChatsSlice'
 
 import { 
-  fetchPrivCList, 
-  privCListFetched, 
-  selectActivePrivCListObj } from '../../../reducers/privCListSlice'
-
-import { 
   fetchPrivCMsgList, 
   privCMsgListFetched, 
-  selectOKPrivCMsgList } from '../../../reducers/privCMsgListsSlice'
+  selectPrivCMsgList_OK,
+  selectPrivCMsgList_Pending,
+  selectPrivCMsgList_Flagged,
+  selectPrivCMsgList_Removed,
+  selectPrivCMsgLists } from '../../../reducers/privCMsgListsSlice'
 
 import { 
   fetchPrivCMessagesFromList, 
@@ -34,19 +44,22 @@ import {
 import { 
   fetchPrivCParticList,
   privCParticListFetched, 
-  selectAdminPrivCParticList,
-  selectActivePrivCParticList, 
-  selectPendingPrivCParticList,
-  selectInactivePrivCParticList,
-  selectFlaggedPrivCParticList,
-  selectBlockedPrivCParticList } from '../../../reducers/privCParticListsSlice'
+  selectPrivCParticList_Admin,
+  selectPrivCParticList_Active, 
+  selectPrivCParticList_Pending,
+  selectPrivCParticList_Inactive,
+  selectPrivCParticList_Flagged,
+  selectPrivCParticList_Blocked } from '../../../reducers/privCParticListsSlice'
 
 import {
   privCParticipantsFetchedFromList,
   fetchPrivCParticipantsFromList,
-  selectPrivCParticipants } from '../../../reducers/privCParticipantsSlice'
+  selectPrivCParticipants,
+  selectPrivCParticipants_Users } from '../../../reducers/privCParticipantsSlice'
 
-import { Button } from 'react-native'
+import { 
+  InteractionManager,
+  Button } from 'react-native'
 
 import { ButtonDefault, 
          ButtonTitle,
@@ -61,7 +74,7 @@ import LoginHeader from './LoginHeader'
 const LoginScreen = ({ navigation }) => {
   
   const [username, setUsername] = useState('fakeuser9')
-  const [password, setPassword] = useState('=]-[0p9o8iT')
+  const [password, setPassword] = useState('=]-[0p9o8iT')  
 
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
@@ -72,129 +85,180 @@ const LoginScreen = ({ navigation }) => {
   
   const dispatch = useDispatch()
 
+  const loadPrivCList = async privCListId => {
+    const fetchedPrivCList = privCListId != '' ? 
+      await dispatch(fetchPrivCList(privCListId))
+              .then(unwrapResult) : false
+    
+    if (fetchedPrivCList) {
+      dispatch(privCListFetched(fetchedPrivCList))
+      return true
+    }
+    return false
+  }
+
+  const loadPrivateChats = async privCList => {
+    
+    const fetchedPrivateChats = privCList.length ? 
+      await dispatch(fetchPrivateChatsFromList(privCList))
+              .then(unwrapResult) : false
+
+    if (fetchedPrivateChats) {
+      dispatch(privateChatsFetchedFromList(fetchedPrivateChats))
+      return true
+    }
+    return false
+  }
+
+  const loadPrivCMsgList = async privCMsgListId => {
+
+    const fetchedPrivCMsgList = privCMsgListId != '' ? 
+      await dispatch(fetchPrivCMsgList(privCMsgListId))
+              .then(unwrapResult) : false
+    
+    if (fetchedPrivCMsgList) {
+      dispatch(privCMsgListFetched(fetchedPrivCMsgList))
+      return true
+    }
+    return false
+  }
+
+  const loadPrivCMessages = async privCMsgList  => {
+    const fetchedPrivCMessages = privCMsgList.length ? 
+      await dispatch(fetchPrivCMessagesFromList(privCMsgList))
+              .then(unwrapResult) : false
+
+    if (fetchedPrivCMessages) {
+      dispatch(privCMessagesFetchedFromList(fetchedPrivCMessages))
+      return true
+    }
+    return false
+  }
+
+  const loadPrivCParticList = async privCParticListId => {
+
+    const fetchedPrivCParticList = privCParticListId != '' ? 
+      await dispatch(fetchPrivCParticList(privCParticListId))
+              .then(unwrapResult) : false
+
+    if (fetchedPrivCParticList) {
+      dispatch(privCParticListFetched(fetchedPrivCParticList))
+      return true
+    }
+    return false
+  }
+
+  const loadPrivCParticipants = async privCParticList  => {
+
+    const fetchedPrivCParticipants = privCParticList.length ? 
+      await dispatch(fetchPrivCParticipantsFromList(privCParticList))
+              .then(unwrapResult) : false
+
+    if (fetchedPrivCParticipants) {
+      dispatch(privCParticipantsFetchedFromList(fetchedPrivCParticipants))
+      return true
+    }
+    return false
+  }
+
+  const loadUsers = async usersList  => {
+    const fetchedUsers = usersList.length ? 
+      await dispatch(fetchUsersFromList(usersList))
+              .then(unwrapResult) : false
+
+    if (fetchedUsers) {
+      var usersFetched = await dispatch(usersFetchedFromList(fetchedUsers))
+      return true
+    }
+    return false
+  }
+
+  const fetchAll = async () => {
+
+    let user = selectUser()
+    
+    let pricCListId = user.privateChats
+
+    let loadedPrivCList = await loadPrivCList(pricCListId)
+
+    let privCList = {}
+
+    privCList = loadedPrivCList ? [
+      ...selectPrivCList_Active(),
+      ...selectPrivCList_Pending(),
+      ...selectPrivCList_Hidden(),
+      ...selectPrivCList_Archived()
+    ] : []
+
+    let loadedPrivateChats = await loadPrivateChats(privCList)
+    
+    let privateChats = loadedPrivateChats ? selectPrivateChats() : []
+
+    if (privateChats.length) {
+      privateChats.forEach(async chat => {
+
+        // Fetch private chat messages
+        let msgListId = chat.messagesList
+        let loadedPrivCMsgList = await loadPrivCMsgList(msgListId)
+        
+        let privCMsgList = []
+
+        privCMsgList = loadedPrivCMsgList ? [
+          ...selectPrivCMsgList_OK(msgListId),
+          ...selectPrivCMsgList_Pending(msgListId),
+          ...selectPrivCMsgList_Flagged(msgListId),
+          ...selectPrivCMsgList_Removed(msgListId)
+        ] : false
+        
+        let loadedPrivCMessages = await loadPrivCMessages(privCMsgList)
+        // fetch private chat participants
+        let particListId = chat.participantsList
+
+        let loadedPrivCParticList = await loadPrivCParticList(particListId)
+        
+        let privCParticList = []
+
+        privCParticList = loadedPrivCParticList ? [
+          ...selectPrivCParticList_Admin(particListId),
+          ...selectPrivCParticList_Active(particListId),
+          ...selectPrivCParticList_Pending(particListId),
+          ...selectPrivCParticList_Inactive(particListId),
+          ...selectPrivCParticList_Flagged(particListId),
+          ...selectPrivCParticList_Blocked(particListId),
+        ] : false
+        
+        let loadedPrivCParticipants = await loadPrivCParticipants(privCParticList)
+        
+        let privCParticipants_Users = loadedPrivCParticipants ? 
+          selectPrivCParticipants_Users(privCParticList) : []
+
+        let loadedUsers = await loadUsers(privCParticipants_Users)
+      })
+    }
+  }
+    
+
   const onUsernameChanged = e => setUsername(e)
   const onPasswordChanged = e => setPassword(e)
 
   const onLoginClicked = async () => {
+    
   	if (canLogin) {
       try {
         setAddRequestStatus('pending')
 
-        const resultAction = await dispatch(
+        const loginUser = await dispatch(
           login({
             username,
             password
           })
-        )
+        ).then(unwrapResult)
 
-        dispatch(userLoggedIn(resultAction))
-
+        dispatch(userLoggedIn(loginUser))
         setAddRequestStatus('success')
-        const user = selectUser()
 
-        const fetchedPrivCList = user.privateChats != '' ? 
-          await dispatch(fetchPrivCList(user.privateChats)) : false
+        fetchAll()
 
-        if (fetchedPrivCList) {
-          dispatch(privCListFetched(fetchedPrivCList))
-        }
-
-        const privCList = fetchedPrivCList ? selectActivePrivCListObj() : false
-
-        const fetchedPrivateChats = Object.keys(privCList).length ? 
-          await dispatch(fetchPrivateChatsFromList(privCList)) : false
-
-        if (fetchedPrivateChats) {
-          dispatch(privateChatsFetchedFromList(fetchedPrivateChats))
-          const privateChats = selectPrivateChats()
-
-          privateChats.forEach(async chat => {
-            const fetchedPrivCMsgList = chat.messagesList != '' ? await dispatch(fetchPrivCMsgList(chat.messagesList)) : false
-
-            if (fetchedPrivCMsgList) {
-              dispatch(privCMsgListFetched(fetchedPrivCMsgList))
-            }
-
-            const privCMsgList = fetchedPrivCMsgList ? selectOKPrivCMsgList(chat.messagesList) : []
-            
-            const fetchedPrivCMessages = privCMsgList.length ? 
-              await dispatch(fetchPrivCMessagesFromList(privCMsgList)) : false
-
-            if (fetchedPrivCMessages) {
-              dispatch(privCMessagesFetchedFromList(fetchedPrivCMessages))
-            }
-
-            const fetchedPrivCParticList = chat.participantsList != '' ? await dispatch(fetchPrivCParticList(chat.participantsList)) : false
-            
-            if (fetchedPrivCParticList) {
-              dispatch(privCParticListFetched(fetchedPrivCParticList))
-            }
-            const adminPrivCParticList = fetchedPrivCParticList ? selectAdminPrivCParticList(chat.participantsList) : []
-            
-            const fetchedAdminPrivCParticipants = adminPrivCParticList.length ? 
-              await dispatch(fetchPrivCParticipantsFromList(adminPrivCParticList)) : false
-
-            if (fetchedAdminPrivCParticipants) {
-              dispatch(privCParticipantsFetchedFromList(fetchedAdminPrivCParticipants))
-            }
-
-            const activePrivCParticList = fetchedPrivCParticList ? selectActivePrivCParticList(chat.participantsList) : []
-
-            const fetchedActivePrivCParticipants = activePrivCParticList.length ? 
-              await dispatch(fetchPrivCParticipantsFromList(activePrivCParticList)) : false
-            if (fetchedActivePrivCParticipants) {
-              dispatch(privCParticipantsFetchedFromList(fetchedActivePrivCParticipants))
-            }
-
-            const pendingPrivCParticList = fetchedPrivCParticList ? selectPendingPrivCParticList(chat.participantsList) : []
-            
-            const fetchedPendingPrivCParticipants = pendingPrivCParticList.length ? 
-              await dispatch(fetchPrivCParticipantsFromList(pendingPrivCParticList)) : false
-            
-            if (fetchedPendingPrivCParticipants) {
-              dispatch(privCParticipantsFetchedFromList(fetchedPendingPrivCParticipants))
-            }
-
-            const inactivePrivCParticList = fetchedPrivCParticList ? selectInactivePrivCParticList(chat.participantsList) : []
-
-            const fetchedInactivePrivCParticipants = inactivePrivCParticList.length ? 
-              await dispatch(fetchPrivCParticipantsFromList(inactivePrivCParticList)) : false
-
-            if (fetchedInactivePrivCParticipants) {
-              dispatch(privCParticipantsFetchedFromList(fetchedInactivePrivCParticipants))
-            }
-
-            const flaggedPrivCParticList = fetchedPrivCParticList ? selectFlaggedPrivCParticList(chat.participantsList) : []
-            
-            const fetchedFlaggedPrivCParticipants = flaggedPrivCParticList.length ? 
-              await dispatch(fetchPrivCParticipantsFromList(flaggedPrivCParticList)) : false
-
-            if (fetchedFlaggedPrivCParticipants) {
-              dispatch(privCParticipantsFetchedFromList(fetchedFlaggedPrivCParticipants))
-            }
-
-            const blockedPrivCParticList = fetchedPrivCParticList ? selectBlockedPrivCParticList(chat.participantsList) : []
-            
-            const fetchedBlockedPrivCParticipants = blockedPrivCParticList.length ? 
-              await dispatch(fetchPrivCParticipantsFromList(blockedPrivCParticList)) : false
-
-            if (fetchedBlockedPrivCParticipants) {
-              dispatch(privCParticipantsFetchedFromList(fetchedBlockedPrivCParticipants))
-            }
-
-            const participants = selectPrivCParticipants()
-
-            participants.forEach(async participant => {
-              const fetchedParticipantUser = await dispatch(fetchUser(participant.user))
-              dispatch(anotherUserFetched(fetchedParticipantUser))
-            })
-          
-          })
-        }
-
-    
-
-        
         navigation.dispatch(
           StackActions.replace('Nav')
         )
@@ -207,10 +271,10 @@ const LoginScreen = ({ navigation }) => {
       }
   	}
   }
- 
   
   return(
   	<>
+      
   		<LoginHeader />
   		
 			<Page>
@@ -234,6 +298,7 @@ const LoginScreen = ({ navigation }) => {
   				<ButtonDefault onPress={onLoginClicked}>
   					<ButtonTitle>Login</ButtonTitle>
   				</ButtonDefault>
+          
         </Inner>
 			</Page>
       <Button

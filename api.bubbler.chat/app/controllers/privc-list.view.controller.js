@@ -31,10 +31,8 @@ exports.create = async (req, res) => {
 };
 
 exports.findOne = async (req, res) => {
-	console.log('findOne')
 	var id = req.sanitize(req.params.id);
 	var privCList = await findOnePrivCList(id, res);
-	console.log('privCList',privCList)
 	res.json(privCList);
 };
 

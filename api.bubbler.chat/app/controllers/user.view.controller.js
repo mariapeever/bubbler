@@ -94,7 +94,6 @@ exports.findOne = async (req, res) => {
 	
 	var id = req.sanitize(req.params.id);
 	var user = await findOneUser(id, res);
-	console.log(user)
 	res.json(user);
 
 };

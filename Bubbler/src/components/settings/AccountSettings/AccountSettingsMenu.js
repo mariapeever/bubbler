@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import { useDispatch } from 'react-redux'
 
-import { fetchUser, userFetched, selectUserId, selectUser } from '../../../reducers/userSlice'
+import { fetchUser, userFetched, selectUser } from '../../../reducers/usersSlice'
 
 import Ionicons from 'react-native-vector-icons/Ionicons' 
 Ionicons.loadFont()
@@ -32,10 +32,6 @@ import {
 import SettingsHeader from '../SettingsHeader'
 
 const AccountSettingsMenuScreen = ({ navigation }) => {
-
-	const userId = selectUserId()
-
-	const [id, setId] = useState(userId)
 
 	const [firstName, setFirstName] = useState('')
 	const [lastName, setLastName] = useState('')

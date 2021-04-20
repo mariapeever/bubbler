@@ -68,17 +68,18 @@ export const Stream = styled.FlatList`
 	flex: 1;
 	flex-grow: 11;
 	padding: 26px 13px;
+	align-items: flex-end;
 	align-content: flex-end;
 	flex-direction: column-reverse;
 ` 
 
 export const MessageBubble = styled.View`
 	max-width: 80%;
-	margin-bottom: 3px;
+	margin-bottom: ${props => props.nextSelf ? '3px' : '13px'};
 	border-radius: 26px;
-	align-self: flex-end;
+	align-self: ${props => props.self == true ? 'flex-end' : 'flex-start'};
 	padding: 13px 18px;
-	background-color: ${(props: StyledProps) => props.theme && props.theme.background.mainHighlight};
+	background-color: ${props => props.self == true ? props.theme.background.mainHighlight : props.theme.background.light};
 `
 
 

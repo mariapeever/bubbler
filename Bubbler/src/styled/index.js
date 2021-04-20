@@ -44,6 +44,7 @@ import {
 } from './Utils'
 
 import { 
+	BodyText,
 	LightTitle,
 	LightText,
 	PageTitle,
@@ -64,6 +65,7 @@ import {
 } from './Comps'
 
 export {
+	BodyText,
 	ButtonDefault, 
 	ButtonTitle,
 	BottomToolbar,

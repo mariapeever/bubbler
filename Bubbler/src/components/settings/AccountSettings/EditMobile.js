@@ -6,7 +6,7 @@ import { unwrapResult } from '@reduxjs/toolkit'
 
 import { StackActions, CommonActions } from '@react-navigation/native'
 
-import { selectUser, fetchUser, userFetched, updateUser, userUpdated } from '../../../reducers/userSlice'
+import { selectUser, fetchUser, userFetched, updateUser, userUpdated } from '../../../reducers/usersSlice'
 
 import { Container } from '../../common'
 

@@ -7,18 +7,18 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 import SettingsMenu from './SettingsMenu'
 
-import { ChatSettings } from './ChatSettings'
-import { NotificationSettings } from './NotificationSettings'
-import { PrivacySettings } from './PrivacySettings'
-import { ProfileSettings } from './ProfileSettings'
-import { Invite } from './Invite'
-import { Help } from './Help'
+import { ChatSettings } from './chatSettings'
+import { NotificationSettings } from './notificationSettings'
+import { PrivacySettings } from './privacySettings'
+import { ProfileSettings } from './profileSettings'
+import { Invite } from './invite'
+import { Help } from './help'
 
 import { 
 	AccountSettings,
 	EditPersonalDetails,
 	EditEmail,
-	EditMobile } from './AccountSettings'
+	EditMobile } from './accountSettings'
 
 const Stack = createStackNavigator()
 

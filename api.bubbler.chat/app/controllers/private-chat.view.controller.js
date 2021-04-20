@@ -50,7 +50,6 @@ exports.create = async (req, res) => {
 		privileges: config.PRIVATE_CHAT.ROLES.ADMIN
 	}, res);
 	var admin = await findOneUser(auth.user, res);
-	console.log('admin',admin)
 	// create PrivateChatParticipant for admin
 	var chatAdmin = await createPrivCParticipant({
 		user: auth.user,
@@ -71,7 +70,6 @@ exports.create = async (req, res) => {
 		for (let [key, val] of Object.entries(config.PRIVATE_CHAT.ROLES)) {
 
 			var keyLower = key.toLowerCase();
-			
 			var role = await createRole({
 					name: keyLower,
 					privileges: val
@@ -79,9 +77,9 @@ exports.create = async (req, res) => {
 			if(privCParticipants[keyLower]) {
 				participants[keyLower] = [];
 				for (var i = 0; i < privCParticipants[keyLower].length; i++) {
-					;
-					let userId = req.sanitize(privCParticipants[keyLower][i]);
 					
+					let userId = req.sanitize(privCParticipants[keyLower][i]);
+
 					let privCParticipant = await createPrivCParticipant({
 						user: userId,
 						role: role._id,
@@ -98,7 +96,6 @@ exports.create = async (req, res) => {
 
 	var privateChat = await createPrivateChat(privCObj, res);
 	// Notify participants !!!
-	console.log('admin.privateChats',admin.privateChats)
 	if (!admin.privateChats) {
 
 		var privCList = await createPrivCList({
@@ -112,18 +109,15 @@ exports.create = async (req, res) => {
 		})
 
 	} else {
-		console.log('admin.privateChats',admin.privateChats)
 		var privCList = await findOnePrivCList(admin.privateChats, res);
 		privCList.active.push({
 			privateChat: privateChat._id, 
 			participant: chatAdmin._id
 		});
-		console.log('privCList1',privCList)
 		findOneAndUpdatePrivCList(admin.privateChats, {
 			active: privCList.active
 		}, res);
 		var privCList2 = await findOnePrivCList(admin.privateChats, res);
-		console.log('privCList2',privCList2)
 	}
 
 	res.json(privateChat);

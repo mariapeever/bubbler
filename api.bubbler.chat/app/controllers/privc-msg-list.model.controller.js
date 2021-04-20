@@ -15,13 +15,13 @@ exports.findOnePrivCMsgList = async (id, res) => {
 		.then(list => {
 			try{
 				if (!list) throw 'Messages list not found';
-				return list;
+				return list
 			} catch {
 				res.status(404).send({ message: err });
 			}
 		})
 			.catch(err => {
-				res.staus(500).send({ message: err });
+				res.status(500).send({ message: err });
 			});
 };
 

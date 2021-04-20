@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'
 
 import Ionicons from 'react-native-vector-icons/Ionicons' 
 Ionicons.loadFont()
 
 import { createStackNavigator } from '@react-navigation/stack'
 
-import { selectActivePrivCList } from '../../reducers/privCListSlice'
+import { selectPrivCList_Active } from '../../reducers/privCListSlice'
 import { selectPrivateChatsFromList } from '../../reducers/privateChatsSlice'
 
 
@@ -15,8 +15,12 @@ import { PrivateChat } from '../privateChat'
 const Stack = createStackNavigator()
 
 const SettingsNav = () => {
-	const privCList = selectActivePrivCList()
-	const privateChats = privCList ? selectPrivateChatsFromList(privCList) : []
+
+	const [privateChats, setPrivateChats] = useState(() => {
+		const privCList_Active = selectPrivCList_Active()
+		return privCList_Active.length  ? 
+			selectPrivateChatsFromList(privCList_Active) : []
+	})
 
 	const renderedPrivateChatsNav = privateChats.map(e => {
 		return (

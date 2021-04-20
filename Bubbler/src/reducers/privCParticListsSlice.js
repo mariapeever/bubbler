@@ -25,15 +25,14 @@ export const fetchPrivCParticList = createAsyncThunk('privCParticLists', async i
 const constructor = e => {
 	
 	return {
-		id: e._id,
 		admin: [ ...e.admin ],
 		active: [ ...e.active ],
 		pending: [ ...e.pending ],
 		inactive: [ ...e.inactive ],
 		flagged: [ ...e.flagged ],
 		blocked: [ ...e.blocked ],
-		createdAt: e.created_at,
-		updatedAt: e.updated_at
+		createdAt: e.createdAt,
+		updatedAt: e.updatedAt
 	}
 }
 
@@ -54,9 +53,8 @@ export const privCParticListsSlice = createSlice({
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCParticLists: { ...currentState.privCParticLists, ...action.payload }}
 		    },
-		    prepare(action) {
-		    	
-		    	return preparePayload(action.payload)
+		    prepare(payload) {
+		    	return preparePayload(payload)
 		    }
 		}
 	},
@@ -74,11 +72,11 @@ export const selectPrivCParticLists = () => currentState.privCParticLists
 
 export const selectPrivCParticListById = id => currentState.privCParticLists[id]
 
-export const selectAdminPrivCParticList = id => currentState.privCParticLists[id].admin
-export const selectActivePrivCParticList = id => currentState.privCParticLists[id].active
-export const selectPendingPrivCParticList = id => currentState.privCParticLists[id].pending
-export const selectInactivePrivCParticList = id => currentState.privCParticLists[id].inactive
-export const selectFlaggedPrivCParticList = id => currentState.privCParticLists[id].flagged
-export const selectBlockedPrivCParticList = id => currentState.privCParticLists[id].blocked
+export const selectPrivCParticList_Admin = id =>  currentState.privCParticLists[id].admin
+export const selectPrivCParticList_Active = id => currentState.privCParticLists[id].active
+export const selectPrivCParticList_Pending = id => currentState.privCParticLists[id].pending
+export const selectPrivCParticList_Inactive = id => currentState.privCParticLists[id].inactive
+export const selectPrivCParticList_Flagged = id => currentState.privCParticLists[id].flagged
+export const selectPrivCParticList_Blocked = id => currentState.privCParticLists[id].blocked
 
 

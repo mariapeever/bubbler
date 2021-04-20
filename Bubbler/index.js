@@ -7,7 +7,7 @@ import 'react-native-gesture-handler'
 import {AppRegistry} from 'react-native'
 import {name as appName} from './app.json'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { NavigationContainer } from '@react-navigation/native'
 import { Provider } from 'react-redux'
@@ -22,8 +22,10 @@ import store from './src/store'
 
 interface Props {}
 const Entry = ({}: Props) => {
+	
 	return(
 		<NavigationContainer>
+			
 			<Provider store={store}>
 				<ThemeProvider theme={Theme} >
 					<App />

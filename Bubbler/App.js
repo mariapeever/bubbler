@@ -6,13 +6,16 @@
  * @flow strict-local
  */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { Login } from './src/components/auth'
 
 const App = (props) => {
+
   return (
+  	
   	<Login />
+  	
   )
 }
 

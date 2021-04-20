@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-
+import { selectUserId } from './usersSlice'
 import { selectPrivCParticListById } from './privCParticListsSlice'
 
 const initialState = {
-	privCParticipants: [],
+	privCParticipants: {},
 	status: 'idle',
 	error: null
 }
+
 const status = ['admins','active','pending','inactive','flagged','blocked']
 
 export const fetchPrivCParticipantsFromList = createAsyncThunk('PrivCParticipants', async privCParticList => {
@@ -81,7 +82,6 @@ export const updatePrivCParticipant = createAsyncThunk('privCParticipants', asyn
 
 const constructor = e => {
 	return {
-		id: e._id,
 		user: e.user,
 		addedBy: e.addedBy ? e.addedBy : '',
 		flaggedBy: e.flaggedBy ? [...e.flaggedBy] : [],
@@ -89,12 +89,12 @@ const constructor = e => {
 		removedBy: e.removedBy ? e.removedBy : '',
 		status: e.status,
 		messagesList: e.messagesList ? e.messagesList : '',
-		createdAt: e.created_at,
-		updatedAt: e.updated_at,
 		lastActiveAt: e.lastActiveAt ? e.lastActiveAt : '',
 		flaggedAt: e.flaggedAt ? e.flaggedAt : '',
 		deactivatedAt: e.deactivatedAt ? e.deactivatedAt : '',
 		blockedAt: e.blockedAt ? e.blockedAt : '',
+		createdAt: e.createdAt,
+		updatedAt: e.updatedAt
 	}
 }
 
@@ -123,8 +123,8 @@ export const privCParticipantsSlice = createSlice({
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCParticipants: { ...currentState.privCParticipants, ...action.payload }}
 		    },
-		    prepare(action) {
-		    	return preparePrivCParticipantsFromListPayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivCParticipantsFromListPayload(payload)
 		    }
 		},
 		privCParticipantFetched: {
@@ -132,24 +132,24 @@ export const privCParticipantsSlice = createSlice({
 		    	currentState = { ...currentState, privCParticipants: { ...currentState.privCParticipants, ...action.payload } }
 
 		    },
-		    prepare(action) {
-		    	return preparePrivCParticipantPayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivCParticipantPayload(payload)
 		    }
 		},
 		privCParticipantAdded: {
 			reducer(state, action) {
 		      	currentState = { ...currentState, privCParticipants: { ...currentState.privateChats, ...action.payload } }
 		    },
-		    prepare(action) {
-		    	return preparePrivCParticipantPayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivCParticipantPayload(payload)
 		    }
 		},
 		privCParticipantUpdated: {
 			reducer(state, action) {
 				currentState = { ...currentState, privCParticipants: { ...currentState.privCParticipants, ...action.payload } }
 			},
-			prepare(action) {
-				return preparePrivCParticipantPayload(action.payload)
+			prepare(payload) {
+				return preparePrivCParticipantPayload(payload)
 			}
 		}
 	},
@@ -161,10 +161,26 @@ export default privCParticipantsSlice.reducer
 
 export const { privCParticipantsFetchedFromList, privCParticipantFetched, privCParticipantAdded, privCParticipantUpdated } = privCParticipantsSlice.actions
 
-export const selectPrivCParticipants = () => Object.values(currentState.privCParticipants)
+export const selectPrivCParticipants_Users = () => {
+	return Object.values(currentState.privCParticipants)
+		.map(e => e.user)
+			.filter(e => e != selectUserId())
+}
 
-export const selectPrivCParticipantsFromList = privCParticList => privCParticList.map(id => currentState.privCParticipants[id])
-export const selectPrivCParticipantById = id => currentState.privCParticipants[id]
+export const selectPrivCParticipants = () => {
+	return Object.entries(currentState.privCParticipants).map(([key, value]) => {
+		return { ...value, id: key }
+	})
+}
 
-export const selectLastParticipantFromList = privCParticList => currentState.privCParticipants[privCParticList[privCParticList.length - 1]]
+export const selectPrivCParticipantsFromList = privCParticList => privCParticList.map(e => {
+	return { ...currentState.privCParticipants[e], id: e }
+})
+
+export const selectPrivCParticipantById = id => {
+	return { ...currentState.privCParticipants[id], id: id }
+}
+
+
+
 

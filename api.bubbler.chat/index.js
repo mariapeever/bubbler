@@ -1,6 +1,7 @@
 var express = require('express');
 
 const app = express();
+
 const port = process.env.PORT || 8000;
 
 var session = require('express-session');
@@ -11,7 +12,6 @@ const cors = require("cors");
 
 var config = require('./app/config/app.config');
 const db = require("./app/models");
-
 
 // const fileUpload = require('express-fileupload');
 
@@ -50,6 +50,7 @@ app.use(express.static('public'));
 // require('./app/routes/main')(app);
 // app.set('views', './views');
 // app.set('view engine', 'pug');
+
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/private-chat.routes')(app);
@@ -58,7 +59,6 @@ require('./app/routes/privc-message.routes')(app);
 require('./app/routes/privc-msg-list.routes')(app);
 require('./app/routes/privc-participant.routes')(app);
 require('./app/routes/privc-partic-list.routes')(app);
-console.log('index');
 
 //////////////
 

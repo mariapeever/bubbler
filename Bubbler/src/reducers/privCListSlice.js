@@ -1,14 +1,9 @@
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
+
 const initialState = {
-	privCList: { 
-		id: '',
-		active: {},
-		pending: {},
-		hidden: {},
-		archived: {},
-		updatedAt: '',
-	},
+	privCList: {},
 	status: 'idle',
 	error: null
 }
@@ -17,7 +12,9 @@ const status = ['active', 'pending', 'hidden', 'archived']
 
 export const fetchPrivCList = createAsyncThunk('privCList', async id => {
 	// accepts privCList ref from User
+
 	var url = `http://localhost:8000/api/privCLists/${id}`
+
 	return await fetch(url)
 	    .then((response) => response.json())
 			.then((data) => {
@@ -30,23 +27,25 @@ export const fetchPrivCList = createAsyncThunk('privCList', async id => {
 
 const preparePayload = (payload) => {
 	var privCList = {
-		id: payload._id,
-		updatedAt: payload.updated_at,
 		active: {},
 		pending: {},
 		hidden: {},
-		archived: {}
+		archived: {},
+		createdAt: payload.createdAt,
+		updatedAt: payload.updatedAt
 	}
 
 	for (let [key, val] of Object.entries(privCList)) {
 		if(status.includes(key)) {
 			payload[key].forEach(e => {
-				privCList[key] = { ...privCList[key], ...{ [e.privateChat]: { participant: e.participant }}}
+				privCList[key] = { ...privCList[key], 
+					...{ [e.privateChat]: { participant: e.participant }}}
 			})
 		}
 	}
 
-	return { payload: privCList }
+	return { payload: 
+		{ [payload._id] : privCList }}
 }
 
 var currentState = initialState
@@ -57,10 +56,10 @@ export const privCListSlice = createSlice({
 	reducers: {
 		privCListFetched: {
 		    reducer(state, action) {
-		    	currentState = { ...currentState, privCList: action.payload }
+		    	currentState = { ...currentState, privCList: { ...currentState.privCList, ...action.payload }}
 		    },
-		    prepare(action) {
-		    	return preparePayload(action.payload)
+		    prepare(payload) {
+		    	return preparePayload(payload)
 		    }
 		}
 	},
@@ -72,25 +71,57 @@ export default privCListSlice.reducer
 
 export const { privCListFetched } = privCListSlice.actions
 
-export const selectPrivCList = () => {
-	Object.entries(currentState.privCList).forEach(([key, value]) => {
-		if(status.includes(key)) {
-			currentState.privCList[key] = Object.keys(currentState.privCList[key])
+export const selectPrivCList = id => {
+	Object.entries(currentState.privCList[id]).forEach(([key, value]) => {
+		if (status.includes(key)) {
+			currentState.privCList[id][key] = Object.keys(currentState.privCList[id][key])
 		}
 	})
-	return currentState.privCList
+	return currentState.privCList[id]
 }
-export const selectPrivCListId = () => currentState.privCList.id
 
-export const selectActivePrivCList = () => Object.keys(currentState.privCList.active)
-export const selectPendingPrivCList = () => Object.keys(currentState.privCList.pending)
-export const selectHiddenPrivCList = () => Object.keys(currentState.privCList.hidden)
-export const selectArchivedPrivCList = () => Object.keys(currentState.privCList.archived)
+export const selectPrivCListParticipantByPrivCId = privCId => {
 
-export const selectActivePrivCListObj = () => currentState.privCList.active
-export const selectPendingPrivCListObj = () => currentState.privCList.pending
-export const selectHiddenPrivCListObj = () => currentState.privCList.hidden
-export const selectArchivedPrivCListObj = () => currentState.privCList.archived
+	let entries = Object.entries(currentState.privCList[selectPrivCListId()])
+	for(let i = 0; i < entries.length; i++) {
+		let [key, value] = entries[i]
+		return (status.includes(key) && Object.keys(value).includes(privCId)) ? 
+			value[privCId].participant : '' 
+	}
+}
 
+export const selectPrivCListId = () => {
+	return Object.keys(currentState.privCList)[0]
+}
 
+export const selectPrivCList_Active = (participant = false) => {
+	if (currentState.privCList[selectPrivCListId()]) {
+		return participant ? currentState.privCList[selectPrivCListId()].active : 
+			Object.keys(currentState.privCList[selectPrivCListId()].active)
+	} 
+	return participant ? {} : []
+}
+
+export const selectPrivCList_Pending = (participant = false) => {
+	if (currentState.privCList[selectPrivCListId]) {
+		return participant ? currentState.privCList[selectPrivCListId()].pending : 
+			Object.keys(currentState.privCList[selectPrivCListId()].pending)
+	} 
+	return participant ? {} : []
+	
+}
+export const selectPrivCList_Hidden = (participant = false) => {
+	if (currentState.privCList[selectPrivCListId]) {
+		return participant ? currentState.privCList[selectPrivCListId()].hidden : 
+			Object.keys(currentState.privCList[selectPrivCListId()].hidden)
+	}
+	return participant ? {} : []
+}
+export const selectPrivCList_Archived = (participant = false) => {
+	if (currentState.privCList[selectPrivCListId]) {
+		return participant ? currentState.privCList[selectPrivCListId()].archived : 
+			Object.keys(currentState.privCList[selectPrivCListId()].archived)
+	} 
+	return participant ? {} : []
+}
 

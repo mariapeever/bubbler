@@ -10,7 +10,8 @@ module.exports = mongoose => {
 	  	{ 
 	  		timestamps: 
 	  		{  
-	  			updatedAt: 'updated_at'
+	  			createdAt: 'createdAt', 
+	  			updatedAt: 'updatedAt'
 	  		} 
 	  	}
 	);

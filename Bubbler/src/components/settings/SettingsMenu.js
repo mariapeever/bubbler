@@ -7,13 +7,13 @@ import { View, TouchableOpacity, Text } from 'react-native';
 
 import { Container } from '../common'
 
-import { AccountSettings } from './AccountSettings'
-import { ChatSettings } from './ChatSettings'
-import { ProfileSettings } from './ProfileSettings'
-import { PrivacySettings } from './PrivacySettings'
-import { NotificationSettings } from './NotificationSettings'
-import { Help } from './Help'
-import { Invite } from './Invite'
+import { AccountSettings } from './accountSettings'
+import { ChatSettings } from './chatSettings'
+import { ProfileSettings } from './profileSettings'
+import { PrivacySettings } from './privacySettings'
+import { NotificationSettings } from './notificationSettings'
+import { Help } from './help'
+import { Invite } from './invite'
 
 import { 
 	Page,

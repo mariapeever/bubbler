@@ -11,22 +11,18 @@ const status = ['active','pending','hidden','archived']
 
 export const fetchPrivateChatsFromList = createAsyncThunk('privateChats', async privCList => {
 
-	var ids = Object.keys(privCList).toString()
+	var ids = privCList.toString()
+
 	var url = `http://localhost:8000/api/private-chats/find?ids=${ids}`
-	let privateChats = await fetch(url)
+
+	return await fetch(url)
 	    .then(response => response.json())
 			.then(data => {
-
 				return data
 			})
 				.catch(error =>{
 					console.error(error)
 				})
-	var chats =  privateChats.map(e => { 
-		return {...e, participant: privCList[e._id].participant }
-	})
-	return chats
-	
 })
 
 export const fetchPrivateChat = createAsyncThunk('privateChats', async id => {
@@ -82,7 +78,6 @@ export const updatePrivateChat = createAsyncThunk('privateChats', async privateC
 
 const constructor = e => {
 	return {
-		id: e._id,
 		title: e.title,
 		description: e.description ? e.description : '',
 		participantsList: e.participantsList,
@@ -93,7 +88,8 @@ const constructor = e => {
 		linksList: e.linksList ? e.linksList : '',
 		locationsList: e.locationsList ? e.locationsList : '',
 		documentsList: e.documentsList ? e.documentsList : '',
-		participant: e.participant
+		createdAt: e.createdAt,
+		updatedAt: e.updatedAt
 	}
 }
 
@@ -110,7 +106,8 @@ const preparePrivateChatsFromListPayload = (payload) => {
 const preparePrivateChatPayload = (payload) => {
 
 	var privateChat = Object.assign({}, constructor(payload))
-	return { payload: privateChat }
+	return { payload: 
+		{ [payload._id] : privateChat }}
 }
 
 var currentState = initialState
@@ -123,8 +120,8 @@ export const privateChatsSlice = createSlice({
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privateChats: action.payload }
 		    },
-		    prepare(action) {
-		    	return preparePrivateChatsFromListPayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivateChatsFromListPayload(payload)
 		    }
 		},
 		privateChatFetched: {
@@ -132,24 +129,24 @@ export const privateChatsSlice = createSlice({
 		    	currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload.id } }
 
 		    },
-		    prepare(action) {
-		    	return preparePrivateChatPayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivateChatPayload(payload)
 		    }
 		},
 		privateChatAdded: {
 			reducer(state, action) {
 		      	currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload.id } }
 		    },
-		    prepare(action) {
-		    	return preparePrivateChatPayload(action.payload)
+		    prepare(payload) {
+		    	return preparePrivateChatPayload(payload)
 		    }
 		},
 		privateChatUpdated: {
 			reducer(state, action) {
 				currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload.id } }
 			},
-			prepare(action) {
-				return preparePrivateChatPayload(action.payload)
+			prepare(payload) {
+				return preparePrivateChatPayload(payload)
 			}
 		}
 	},
@@ -159,13 +156,29 @@ export const privateChatsSlice = createSlice({
 
 export default privateChatsSlice.reducer
 
-export const { privateChatsFetchedFromList, privateChatFetched, privateChatAdded, privateChatUpdated } = privateChatsSlice.actions
+export const { 
+	privateChatsFetchedFromList, 
+	privateChatFetched, 
+	privateChatAdded, 
+	privateChatUpdated } = privateChatsSlice.actions
 
-export const selectPrivateChats = () => Object.values(currentState.privateChats)
+export const selectPrivateChatById = id => {
+	return { ...currentState.privateChats[id], id: id } 
+}
 
-export const selectPrivateChatById = id => currentState.privateChats[id]
+export const selectPrivateChats = () => {
+	return Object.entries(currentState.privateChats).map(([key, value]) => {
+		return { ...value, id: key }
+	})
+}
+export const selectPrivateChatsFromList = privCList => privCList.map(e => { 
+	return { ...currentState.privateChats[e], id: e } 
+})
 
-export const selectPrivateChatsFromList = list => list.map(e => currentState.privateChats[e])
+export const selectPrivateChatById_UpdatedAt = id => currentState.privateChats[id] ?currentState.privateChats[id].updatedAt : ''
+
+
+
 
 
 

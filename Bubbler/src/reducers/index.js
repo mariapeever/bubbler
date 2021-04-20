@@ -1,5 +1,5 @@
 'use strict'
-import userReducer from './userSlice'
+import userReducer from './usersSlice'
 import privCListReducer from './privCListSlice'
 import privateChatsReducer from './privateChatsSlice'
 import privCMsgListsReducer from './privCMsgListsSlice'

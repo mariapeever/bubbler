@@ -10,29 +10,27 @@ const { findOneUser,
 				findOneAndDeleteUser } = require("./user.model.controller");
 
 exports.login = async (req, res) => {
-	console.log('test');
 	const bcrypt = require('bcrypt');
 	var plainPassword = req.sanitize(req.body.password);
 
 	var username = req.sanitize(req.body.username);
 	var auth = await findOneAuthByUsername(username, res);
 	var hashedPassword = auth.password;
-	console.log('test');
 	// compare passwords
-  bcrypt.compare(plainPassword, hashedPassword)
-  	.then(async result => {
-  		if (!result) res.status(404).send({ message: 'Wrong password' });
+	bcrypt.compare(plainPassword, hashedPassword)
+		.then(async result => {
+			if (!result) res.status(404).send({ message: 'Wrong password' });
 			req.session.authId = auth._id;
 			// const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  	// 	console.log(ip); // ip address of the user
-  		var user = await findOneUser(auth.user)
-  			.then(user => {
-  				user._doc.username = auth.username
-  				return user
-  			});
+		// 	console.log(ip); // ip address of the user
+			var user = await findOneUser(auth.user)
+				.then(user => {
+					user._doc.username = auth.username
+					return user
+				});
 
-      	res.json(user);
-  });
+	  	res.json(user);
+	});
 };
 
 exports.logout = (req, res) => {

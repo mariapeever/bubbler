@@ -3,8 +3,8 @@ module.exports = app => {
 
 	const privCMessagesController = require('../controllers/privc-message.view.controller');
 	const privCMessagesValidator = require('../validators/privc-message.validator');
+
 	var router = require('express').Router();
-	
 	// Create a user
 	router.post('/', privCMessagesValidator.create, privCMessagesController.create);
 	// Find users by ids
