@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { pure } from 'recompose'
 
 import { useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -174,67 +175,75 @@ const LoginScreen = ({ navigation }) => {
   }
 
   const fetchAll = async () => {
+    try {
+      let user = selectUser()
+      
+      let pricCListId = user.privateChats
 
-    let user = selectUser()
-    
-    let pricCListId = user.privateChats
+      let loadedPrivCList = await loadPrivCList(pricCListId)
 
-    let loadedPrivCList = await loadPrivCList(pricCListId)
+      let privCList = {}
 
-    let privCList = {}
+      privCList = loadedPrivCList ? [
+        ...selectPrivCList_Active(),
+        ...selectPrivCList_Pending(),
+        ...selectPrivCList_Hidden(),
+        ...selectPrivCList_Archived()
+      ] : []
 
-    privCList = loadedPrivCList ? [
-      ...selectPrivCList_Active(),
-      ...selectPrivCList_Pending(),
-      ...selectPrivCList_Hidden(),
-      ...selectPrivCList_Archived()
-    ] : []
+      let loadedPrivateChats = await loadPrivateChats(privCList)
+      
+      let privateChats = loadedPrivateChats ? selectPrivateChats() : []
 
-    let loadedPrivateChats = await loadPrivateChats(privCList)
-    
-    let privateChats = loadedPrivateChats ? selectPrivateChats() : []
+      if (privateChats.length) {
+        privateChats.forEach(async chat => {
 
-    if (privateChats.length) {
-      privateChats.forEach(async chat => {
+          // Fetch private chat messages
+          let msgListId = chat.messagesList
+          let loadedPrivCMsgList = await loadPrivCMsgList(msgListId)
+          
+          let privCMsgList = []
 
-        // Fetch private chat messages
-        let msgListId = chat.messagesList
-        let loadedPrivCMsgList = await loadPrivCMsgList(msgListId)
-        
-        let privCMsgList = []
+          privCMsgList = loadedPrivCMsgList ? [
+            ...selectPrivCMsgList_OK(msgListId),
+            ...selectPrivCMsgList_Pending(msgListId),
+            ...selectPrivCMsgList_Flagged(msgListId),
+            ...selectPrivCMsgList_Removed(msgListId)
+          ] : false
+          
+          let loadedPrivCMessages = await loadPrivCMessages(privCMsgList)
+          // fetch private chat participants
+          let particListId = chat.participantsList
 
-        privCMsgList = loadedPrivCMsgList ? [
-          ...selectPrivCMsgList_OK(msgListId),
-          ...selectPrivCMsgList_Pending(msgListId),
-          ...selectPrivCMsgList_Flagged(msgListId),
-          ...selectPrivCMsgList_Removed(msgListId)
-        ] : false
-        
-        let loadedPrivCMessages = await loadPrivCMessages(privCMsgList)
-        // fetch private chat participants
-        let particListId = chat.participantsList
+          let loadedPrivCParticList = await loadPrivCParticList(particListId)
+          
+          let privCParticList = []
 
-        let loadedPrivCParticList = await loadPrivCParticList(particListId)
-        
-        let privCParticList = []
+          privCParticList = loadedPrivCParticList ? [
+            ...selectPrivCParticList_Admin(particListId),
+            ...selectPrivCParticList_Active(particListId),
+            ...selectPrivCParticList_Pending(particListId),
+            ...selectPrivCParticList_Inactive(particListId),
+            ...selectPrivCParticList_Flagged(particListId),
+            ...selectPrivCParticList_Blocked(particListId),
+          ] : false
+          
+          let loadedPrivCParticipants = await loadPrivCParticipants(privCParticList)
+          
+          let privCParticipants_Users = loadedPrivCParticipants ? 
+            selectPrivCParticipants_Users(privCParticList) : []
 
-        privCParticList = loadedPrivCParticList ? [
-          ...selectPrivCParticList_Admin(particListId),
-          ...selectPrivCParticList_Active(particListId),
-          ...selectPrivCParticList_Pending(particListId),
-          ...selectPrivCParticList_Inactive(particListId),
-          ...selectPrivCParticList_Flagged(particListId),
-          ...selectPrivCParticList_Blocked(particListId),
-        ] : false
-        
-        let loadedPrivCParticipants = await loadPrivCParticipants(privCParticList)
-        
-        let privCParticipants_Users = loadedPrivCParticipants ? 
-          selectPrivCParticipants_Users(privCParticList) : []
+          let loadedUsers = privCParticipants_Users.length ? 
+            await loadUsers(privCParticipants_Users) : false
 
-        let loadedUsers = await loadUsers(privCParticipants_Users)
-      })
+        })
+      }
+    } catch (err) {
+      console.error('Login ::',err)
+    } finally {
+      console.log('User :: Logged in')
     }
+    
   }
     
 
@@ -245,6 +254,7 @@ const LoginScreen = ({ navigation }) => {
     
   	if (canLogin) {
       try {
+        console.log('Login :: logging in...')
         setAddRequestStatus('pending')
 
         const loginUser = await dispatch(
@@ -315,5 +325,4 @@ const Login = ({ navigation }) => {
   	<Container screen={<LoginScreen navigation={ navigation }/>} />
   )
 }
-
 export default Login

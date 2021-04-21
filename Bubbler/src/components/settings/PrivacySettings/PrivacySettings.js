@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { pure } from 'recompose'
 import Ionicons from 'react-native-vector-icons/Ionicons' 
 Ionicons.loadFont()
 
@@ -27,4 +27,4 @@ const PrivacySettings = ({ navigation }) => {
   )
 }
 
-export default PrivacySettings;
+export default PrivacySettings

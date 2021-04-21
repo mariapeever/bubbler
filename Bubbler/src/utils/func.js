@@ -10,3 +10,8 @@ export const dateToTimeDateLabel = date => {
 
 	return date.toLocaleDateString()
 }
+
+export const extractId = action => {
+	let id = Object.keys(action.payload)[0]
+	return id ? id : false
+}

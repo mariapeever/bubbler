@@ -1,3 +1,7 @@
-import { dateToTimeDateLabel } from './func'
+import { dateToTimeDateLabel,
+		extractId } from './func'
 
-export { dateToTimeDateLabel }
+export { 
+	dateToTimeDateLabel,
+	extractId
+}

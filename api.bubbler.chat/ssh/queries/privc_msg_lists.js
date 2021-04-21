@@ -18,4 +18,6 @@ if (msglist.updatedAt.getTime() != updated.getTime()) {
 	result.removed = result.removed.slice(n_removed - Math.min(n_removed, limit), n_removed)
 
 	printjson(result);
+} else {
+	printjson(false);
 }

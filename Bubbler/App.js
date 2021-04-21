@@ -7,7 +7,7 @@
  */
 
 import React, { useEffect } from 'react'
-
+import { pure } from 'recompose'
 import { Login } from './src/components/auth'
 
 const App = (props) => {
@@ -18,5 +18,4 @@ const App = (props) => {
   	
   )
 }
-
 export default App

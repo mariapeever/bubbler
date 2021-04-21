@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import { pure } from 'recompose'
 import { useDispatch } from 'react-redux'
 
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -86,11 +86,16 @@ const EditMobileScreen = ({ navigation }) => {
   )
 }
 
-const EditMobile= ({ navigation }) => {
+const EditEmail= ({ navigation }) => {
   
   return(
     <Container screen={<EditMobile navigation={ navigation } />} />
   )
 }
 
-export default EditMobile
+export default EditEmail
+
+
+
+
+

@@ -1,4 +1,5 @@
 import React from 'react'
+import { pure } from 'recompose'
 import { SafeAreaView } from 'react-native'
 
 import { MainContainer } from '../../styled/Layout'

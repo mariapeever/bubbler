@@ -14,9 +14,7 @@ exec(`/usr/local/bin/mongo --quiet localhost:27017/bubbler --eval "var id=\'${id
     console.error(`exec error: ${error}`);
     return;
   } 
-  if (stdout != '') {
-  	console.log(stdout);
-  }
+  console.log(stdout);
 })
 
 

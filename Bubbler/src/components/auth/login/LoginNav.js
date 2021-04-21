@@ -1,4 +1,5 @@
 import React from 'react';
+import { pure } from 'recompose'
 
 import { createStackNavigator, StackActions } from '@react-navigation/stack'
 
@@ -43,4 +44,4 @@ const LoginNav = () => {
 	);
 }
 
-export default LoginNav;
+export default LoginNav

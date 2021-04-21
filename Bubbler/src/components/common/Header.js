@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, SafeAreaView, Button, StatusBar, StyleSheet } from 'react-native';
-import PropTypes from 'prop-types';
-import Icon from 'react-native-vector-icons/dist/Ionicons';
+import React, { useState } from 'react'
+import { pure } from 'recompose'
 
-const STYLES = ['default', 'dark-content', 'light-content'];
-const TRANSITIONS = ['fade', 'slide', 'none'];
+import { View, Text, SafeAreaView, Button, StatusBar, StyleSheet } from 'react-native'
+import PropTypes from 'prop-types'
+import Icon from 'react-native-vector-icons/dist/Ionicons'
+
+const STYLES = ['default', 'dark-content', 'light-content']
+const TRANSITIONS = ['fade', 'slide', 'none']
 
 const Header = (props) => {
 	
@@ -22,7 +24,7 @@ const Header = (props) => {
     } else {
       setStatusBarStyle(STYLES[styleId]);
     }
-  };
+  }
 
   const changeStatusBarTransition = () => {
     const transition = TRANSITIONS.indexOf(statusBarTransition) + 1;
@@ -31,7 +33,7 @@ const Header = (props) => {
     } else {
       setStatusBarTransition(TRANSITIONS[transition]);
     }
-  };
+  }
   return(
   	<>
 	  	<StatusBar
@@ -42,8 +44,8 @@ const Header = (props) => {
         hidden={hidden} />
 	    {props.screenHeader}
     </>
-   );
-};
+   )
+}
 
+export default Header
 
-export default Header;

@@ -31,9 +31,18 @@ exports.create = async (req, res) => {
 };
 
 exports.findOne = async (req, res) => {
+
 	var id = req.sanitize(req.params.id);
 	var privCList = await findOnePrivCList(id, res);
-	res.json(privCList);
+	var status = ['active', 'pending', 'hidden', 'archived', 'deleted']
+
+	Object.entries(privCList._doc).forEach(async ([key, value]) => {
+		if(status.includes(key)) {
+
+			privCList._doc[key] = value.reverse()
+		}
+	})
+	res.json(privCList)
 };
 
 exports.updateOne = async (req, res) => {

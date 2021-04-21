@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { pure } from 'recompose'
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { PageHeader } from '../../../styled'
@@ -18,4 +18,4 @@ const AccountSettingsMenuHeader = () => {
 	);
 }
 
-export default AccountSettingsMenuHeader;
+export default AccountSettingsMenuHeader

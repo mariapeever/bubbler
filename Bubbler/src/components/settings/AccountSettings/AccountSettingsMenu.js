@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
+import { pure } from 'recompose'
 
 import { useDispatch } from 'react-redux'
 
@@ -80,5 +81,4 @@ const AccountSettingsMenu = ({ navigation }) => {
   	<Container screen={<AccountSettingsMenuScreen navigation={ navigation }/>} />
   )
 }
-
 export default AccountSettingsMenu

@@ -21,4 +21,4 @@ const WallHeader = () => {
 	);
 }
 
-export default WallHeader;
+export default WallHeader

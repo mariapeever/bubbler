@@ -27,7 +27,7 @@ rn_bridge.channel.on('message', (msg) => {
         stream.on('close', function(code, signal) {
           conn.end();
         }).on('data', function(data) {
-          console.log('STDOUT: ' + data);
+          // console.log('STDOUT: ' + data);
           data = data.toString('utf8')
 
           rn_bridge.channel.post('message', data);
@@ -43,7 +43,8 @@ rn_bridge.channel.on('message', (msg) => {
     host: '192.168.0.140',
     port: 8002,
     username: 'root',
-    password: 'test'
+    password: 'test',
+    keepaliveInterval: 60
     // privateKey: { key: fs.readFileSync('id_rsa.pub'), passphrase: '001025_Mp' },
   });
   

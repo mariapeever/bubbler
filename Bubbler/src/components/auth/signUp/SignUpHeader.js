@@ -1,4 +1,5 @@
 import React from 'react';
+import { pure } from 'recompose'
 
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -18,4 +19,5 @@ const SignUpHeader = () => {
 	);
 }
 
-export default SignUpHeader;
+export default SignUpHeader
+

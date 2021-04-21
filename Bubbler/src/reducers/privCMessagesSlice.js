@@ -18,6 +18,7 @@ export const fetchPrivCMessagesFromList = createAsyncThunk('PrivCMessages', asyn
 	    .then(response => response.json())
 			.then(data => {
 				return data
+
 			})
 				.catch(error =>{
 					console.error(error)
@@ -145,7 +146,7 @@ export const privCMessagesSlice = createSlice({
 		},
 		privCMessageAdded: {
 			reducer(state, action) {
-		      	currentState = { ...currentState, privCMessages: { ...currentState.privateChats, ...action.payload } }
+		      	currentState = { ...currentState, privCMessages: { ...currentState.privCMessages, ...action.payload } }
 		    },
 		    prepare(payload) {
 		    	return preparePrivCMessagePayload(payload)

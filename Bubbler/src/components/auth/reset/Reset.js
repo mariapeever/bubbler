@@ -1,5 +1,5 @@
 import { Container } from '../../common'
-
+import { pure } from 'recompose'
 const ResetScreen = () => {
   
   return(

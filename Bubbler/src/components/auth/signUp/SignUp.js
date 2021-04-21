@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-
+import { pure } from 'recompose'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -186,5 +186,4 @@ const SignUp = ({ navigation }) => {
   	<Container screen={<SignUpScreen  navigation={ navigation } />} />
   )
 }
-
 export default SignUp

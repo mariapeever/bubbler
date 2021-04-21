@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { pure } from 'recompose'
 import Ionicons from 'react-native-vector-icons/Ionicons' 
 Ionicons.loadFont()
 
@@ -28,4 +28,4 @@ const Help = ({ navigation }) => {
   )
 }
 
-export default Help;
+export default Help

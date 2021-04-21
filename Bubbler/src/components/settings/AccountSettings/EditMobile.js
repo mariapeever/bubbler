@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import { pure } from 'recompose'
 import { useDispatch } from 'react-redux'
 
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -92,5 +92,4 @@ const EditMobile= ({ navigation }) => {
     <Container screen={<EditMobile navigation={ navigation } />} />
   )
 }
-
 export default EditMobile

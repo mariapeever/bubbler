@@ -13,7 +13,7 @@ const server = new ssh2.Server({
   hostKeys: [{ key: fs.readFileSync('id_rsa.pub'), passphrase: '001025_Mp' }],
   banner: 'Connection established'
 }, function(client) {
-  console.log('Client connected!');
+  
   client.on('authentication', function(ctx) {
     ctx.accept();
   })
@@ -28,12 +28,15 @@ const server = new ssh2.Server({
       
         exec(info.command, {pty: true},  (error, stdout, stderr) => {
           if (error) {
-            // console.error(`exec error: ${error}`);
-            stream.stderr.write('ERROR');
-            // stream.stderr.write(`exec error: ${error}`);
+            console.error(`exec error: ${error}`);
+            // stream.stderr.write('ERROR');
+            if (error.code == "EPIPE") {
+                stream.exit(0);
+            }
+            stream.stderr.write(`exec error: ${error}`);
             return;
           }
-          // console.log(stdout);
+         
           stream.write(stdout);
           stream.exit(0);
           stream.end();
@@ -44,9 +47,11 @@ const server = new ssh2.Server({
     });
   })
   client.on('end', function() {
+
     console.log('Client disconnected');
   })
   client.on('error', function(err) {
+
     console.log('Error',err);
   });
   
@@ -56,6 +61,6 @@ const server = new ssh2.Server({
 
 server.on('connection', (client, info) => {
   console.log('Client :: Connection ::', info.ip)
-  // console.log(info)
+  console.log(info)
 });
 

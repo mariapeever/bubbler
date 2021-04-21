@@ -44,21 +44,20 @@ const prepareFetchPayload = payload => {
 
 
 const prepareSSHPushPayload = payload => {
-
 	var keys = ['_id','ok','flagged','removed','createdAt','updatedAt','__v']
-	var saveAs = ['ok','flagged','removed','createdAt','updatedAt']
+
+	var string = ['createdAt','updatedAt']
+	var array = ['ok','flagged','removed']
 
 	var privCMsgList = {}
 
 	payload = payload.replace(/^.*?{/, "{")
-	
 	var regex = /\(*\)*[^\w\d:(\d+-\d.),]*(ObjectId)*(ISODate)*/g
 	payload = payload.replaceAll(regex, '')
-
 	var _id;
 	for(let i = 0; i < keys.length; i++) {
-		let k = keys[i]
 
+		let k = keys[i]
 		let len = k.length
 		let index = payload.indexOf(k) + len + 1
 		if (i < keys.length - 1) {
@@ -67,11 +66,11 @@ const prepareSSHPushPayload = payload => {
 			next = payload.length - 1
 		}
 		let substr = payload.substr(index, next - index)
-		
-		if (substr.indexOf(',') != -1) {
-			substr = substr.split(",")
-		}
-		if(i != keys.length - 1 && saveAs.includes(k)) {
+		if (array.includes(k)) {
+			substr = substr.indexOf(',') != -1 ? substr.split(",") : []
+		} 
+
+		if(i != keys.length - 1 && (string.includes(k) || array.includes(k))) {
 			privCMsgList[k] = substr
 		} else if (k == '_id') {
 			_id = substr
@@ -127,6 +126,6 @@ export const selectPrivCMsgList_Pending = id => currentState.privCMsgLists[id] ?
 export const selectPrivCMsgList_Flagged = id => currentState.privCMsgLists[id] ? currentState.privCMsgLists[id].flagged : []
 export const selectPrivCMsgList_Removed = id => currentState.privCMsgLists[id] ? currentState.privCMsgLists[id].removed : []
 
-export const selectPrivCMsgListById_UpdatedAt = id => currentState.privCMsgLists[id] ?currentState.privCMsgLists[id].updatedAt : ''
+export const selectPrivCMsgListById_UpdatedAt = id => currentState.privCMsgLists[id] ? currentState.privCMsgLists[id].updatedAt : ''
 
 
