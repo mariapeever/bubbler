@@ -22,6 +22,15 @@ const ButtonBase = styled.TouchableOpacity`
 export const ButtonDefault = styled(ButtonBase)`
 	background-color: ${(props: StyledProps) => props.theme && props.theme.background.mainHighlight};
 `
+export const ButtonClear = styled.TouchableOpacity`
+	font-size: 24px;
+	color: ${(props: StyledProps) => props.theme && props.theme.background.mainHighlight};
+`
+export const ButtonClearTitle = styled.Text`
+	font-size: 18px;
+	align-self: center;
+	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHighlight};
+`
 
 export const ButtonTitle = styled.Text`
 	font-size: 16px;
@@ -60,7 +69,11 @@ export const IconButton = styled(Ionicons)`
 	font-size: 26px;
 	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHighlight};
 `
-
+export const IconButtonRight = styled(IconButton)`
+	font-size: 26px;
+	flex-flow: row-reverse;
+	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHighlight};
+`
 export const WhiteIcon = styled(Ionicons)`
 	font-size: 26px;
 	line-height: 26px;

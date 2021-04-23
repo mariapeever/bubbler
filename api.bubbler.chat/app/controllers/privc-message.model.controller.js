@@ -18,7 +18,7 @@ exports.findOnePrivCMessage = async (id, res) => {
 				if (!msg) throw 'Message not found.';
 				return msg;
 			} catch {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {
@@ -28,15 +28,16 @@ exports.findOnePrivCMessage = async (id, res) => {
 
 exports.findPrivCMessages = async (ids, res) => {
 	var cond = { _id: { $in: ids } };
-	return await PrivCMessage.find(cond).sort({'date': 1}).limit(20)
+	return await PrivCMessage.find(cond)
+	.sort({'date': -1})
+		// .limit(10)
 		.then(msgs => {
 			try {
 				if (!msgs) throw 'Private chat messages not found.';
 				return msgs;
 			} catch {
-				res.status(404).send({ message: 'Not found' });
+				return false;
 			}
-			return msgs
 		})
 			.catch(err => {
 				res.status(500).send({ message: err });
@@ -51,7 +52,7 @@ exports.findOneAndUpdatePrivCMessage = async (id, obj, res) => {
 				if (!privCMessage) throw 'Private chat message not found.';
 				return privCMessage;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 		.catch(err => {

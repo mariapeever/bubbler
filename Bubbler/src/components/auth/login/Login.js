@@ -74,8 +74,8 @@ import LoginHeader from './LoginHeader'
 
 const LoginScreen = ({ navigation }) => {
   
-  const [username, setUsername] = useState('fakeuser9')
-  const [password, setPassword] = useState('=]-[0p9o8iT')  
+  const [username, setUsername] = useState('test36263237')
+  const [password, setPassword] = useState('1ehG8_423d')
 
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
@@ -177,11 +177,9 @@ const LoginScreen = ({ navigation }) => {
   const fetchAll = async () => {
     try {
       let user = selectUser()
-      
       let pricCListId = user.privateChats
 
       let loadedPrivCList = await loadPrivCList(pricCListId)
-
       let privCList = {}
 
       privCList = loadedPrivCList ? [
@@ -210,7 +208,7 @@ const LoginScreen = ({ navigation }) => {
             ...selectPrivCMsgList_Flagged(msgListId),
             ...selectPrivCMsgList_Removed(msgListId)
           ] : false
-          
+
           let loadedPrivCMessages = await loadPrivCMessages(privCMsgList)
           // fetch private chat participants
           let particListId = chat.participantsList
@@ -235,7 +233,6 @@ const LoginScreen = ({ navigation }) => {
 
           let loadedUsers = privCParticipants_Users.length ? 
             await loadUsers(privCParticipants_Users) : false
-
         })
       }
     } catch (err) {

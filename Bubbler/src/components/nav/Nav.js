@@ -18,21 +18,12 @@ const Tab = createBottomTabNavigator();
 function Nav(props, { navigation }) {
   return (
     <Tab.Navigator
-      initialRouteName="Wall"
+      initialRouteName="Chat"
       tabBarOptions={{
         activeTintColor: Theme.color.mainHighlight
       }}
     >
-      <Tab.Screen
-        name="Wall"
-        component={Wall}
-        options={{
-          tabBarLabel: 'Wall',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ios-home-outline" color={color} size={size} />
-          ),
-        }}
-      />
+
       <Tab.Screen
         name="PrivCList"
         component={PrivCList}

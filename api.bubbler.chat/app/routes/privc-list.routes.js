@@ -18,5 +18,5 @@ module.exports = app => {
 	// Update a single privCList by id
 	router.put('/update/:id', utils.reqAuth, privCListsValidator.updateOne, privCListsController.updateOne);
 
-	app.use('/api/privCLists', router);
+	app.use('/api/privc-lists', router);
 };

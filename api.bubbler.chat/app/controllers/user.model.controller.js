@@ -10,7 +10,56 @@ exports.findOneUser = async (id, res) => {
 				if (!user) throw 'User not found.';
 				return user;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
+			}
+		})
+			.catch(err => {
+				res.status(500).send({ message: err });
+			});
+};
+
+exports.findOneUserByUsername = async (username, res) => {
+
+	return await User.findOne({ username: username})
+		.then(user  => { 
+			try {
+				if (!user) throw 'User not found.';
+				return user;
+			} catch (err) {
+				return false;
+			}
+		})
+			.catch(err => {
+				res.status(500).send({ message: err });
+			});
+};
+
+exports.findOneUserByStatus = async (status, res) => {
+
+	return await User.findOne({ status: status})
+		.then(user  => { 
+			try {
+				if (!user) throw 'User not found.';
+				return user;
+			} catch (err) {
+				return false;
+			}
+		})
+			.catch(err => {
+				res.status(500).send({ message: err });
+			});
+};
+
+exports.findUsersByRegex = async (regex, res) => {
+	var query = regex.split(' ')
+	query = query.map(e => /^.*e.*&/)
+	return await User.find().or([{ 'firstName':  { $in: query }}, { 'lastName':  { $in: query }}, { 'email':  { $in: query }}, { 'mobile': { $in: query }} ])
+		.then(users  => { 
+			try {
+				if (!users) throw 'Users not found.';
+				return users;
+			} catch (err) {
+				return false;
 			}
 		})
 			.catch(err => {
@@ -27,9 +76,8 @@ exports.findUsers = async (ids, res) => {
 				if (!users) throw 'Users not found.';
 				return users;
 			} catch {
-				res.status(404).send({ message: 'Not found' });
+				return false;
 			}
-			return users
 		})
 			.catch(err => {
 				res.status(500).send({ message: err });
@@ -45,7 +93,7 @@ exports.findActiveUsers = async (ids, res) => {
 				if (!users) throw 'Users not found.';
 				return users;
 			} catch {
-				res.status(404).send({ message: 'Not found' });
+				return false;
 			}
 			return users
 		})
@@ -71,7 +119,7 @@ exports.findOneAndUpdateUser = async (id, obj, res) => {
 				if (!user) throw 'User not found.';
 				return user;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 		.catch(err => {

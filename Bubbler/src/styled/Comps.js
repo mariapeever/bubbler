@@ -82,6 +82,48 @@ export const MessageBubble = styled.View`
 	background-color: ${props => props.self == true ? props.theme.background.mainHighlight : props.theme.background.light};
 `
 
+export const ModalContainer = styled.View`
+	flex: 1;
+	width: 100%;
+	background-color:  ${(props: StyledProps) => props.theme && props.theme.background.white};
+	margin: 91px 0 130px;
+	align-content: flex-start;
+	align-items: flex-start;
+	border-radius: 26px;
+	shadow-color: "#000",
+	shadow-offset: {
+		width: 2,
+		height: 2,
+	};
+	shadow-opacity: 0.1;
+	shadow-radius: 5px;	
+`
+
+export const ModalHeader = styled.View`
+	justify-content: space-between;
+	width: 100%;
+	padding: 26px;
+	flex-direction: row;
+`
+
+export const ModalTitle = styled.Text`
+	padding: 5px 13px;
+	font-size: 24px;
+	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHighlight};
+`
+
+export const ModalBody = styled.View`
+	flex: 1;
+	padding: 26px;
+	align-items: center;
+	align-content: flex-start;
+	justify-content: flex-start;
+
+`
+
+export const ContactsList = styled.SectionList`
+	
+`
 
 
 

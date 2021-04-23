@@ -31,17 +31,17 @@ const server = new ssh2.Server({
             console.error(`exec error: ${error}`);
             // stream.stderr.write('ERROR');
             if (error.code == "EPIPE") {
+                console.error('err')
                 stream.exit(0);
             }
             stream.stderr.write(`exec error: ${error}`);
             return;
           }
-         
+
           stream.write(stdout);
           stream.exit(0);
           stream.end();
         });
-      
         
       });
     });
@@ -61,6 +61,6 @@ const server = new ssh2.Server({
 
 server.on('connection', (client, info) => {
   console.log('Client :: Connection ::', info.ip)
-  console.log(info)
+  // console.log(info)
 });
 

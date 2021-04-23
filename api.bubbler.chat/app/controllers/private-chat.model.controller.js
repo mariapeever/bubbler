@@ -7,7 +7,7 @@ exports.createPrivateChat = async (obj, res) => {
 
 	return await privateChat.save()
 		.catch(err => {
-			res.status(500).send({ message: err });
+			return res.status(500).send({ message: err });
 		});
 };
 
@@ -19,11 +19,11 @@ exports.findOnePrivateChat = async (id, res) => {
 				if (!chat) throw 'Private chat not found.';
 				return chat;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {
-				res.status(500).send({ message: err });
+				return res.status(500).send({ message: err });
 			});
 };
 
@@ -36,12 +36,11 @@ exports.findPrivateChats = async (ids, res) => {
 				if (!chats) throw 'Private chats not found.';
 				return chats;
 			} catch {
-				res.status(404).send({ message: 'Not found' });
+				return false;
 			}
-			return data
 		})
 			.catch(err => {
-				res.status(500).send({ message: err });
+				return res.status(500).send({ message: err });
 			});
 };
 
@@ -53,10 +52,10 @@ exports.findOneAndUpdatePrivateChat = async (id, obj, res) => {
 				if (!privateChat) throw 'Private chat not found.';
 				return privateChat;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 		.catch(err => {
-			res.status(500).send({ message: err });
+			return res.status(500).send({ message: err });
 		});
 };

@@ -12,8 +12,8 @@ const status = ['active', 'pending', 'hidden', 'archived']
 
 export const fetchPrivCList = createAsyncThunk('privCList', async id => {
 	// accepts privCList ref from User
-
-	var url = `http://localhost:8000/api/privCLists/${id}`
+	console.log(id)
+	var url = `http://localhost:8000/api/privc-lists/${id}`
 
 	return await fetch(url)
 	    .then((response) => response.json())
@@ -124,4 +124,7 @@ export const selectPrivCList_Archived = (participant = false) => {
 	} 
 	return participant ? {} : []
 }
+
+
+
 

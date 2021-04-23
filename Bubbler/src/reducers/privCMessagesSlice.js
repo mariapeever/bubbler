@@ -176,7 +176,7 @@ export const selectPrivCMessages = () => {
 }
 
 const snglMsgConstructor = id => {
-	return { ...currentState.privCMessages[id], id: id }
+	return currentState.privCMessages[id] ? { ...currentState.privCMessages[id], id: id } : false
 }
 
 export const selectPrivCMessagesFromList = privCMsgList => {
@@ -187,9 +187,8 @@ export const selectPrivCMessageById = id => {
 	return snglMsgConstructor(id)
 }
 export const selectLastMessageFromList = privCMsgList => {
-	
-	let id = privCMsgList[privCMsgList.length - 1]
-	return snglMsgConstructor(id)
+	let id = privCMsgList.length ? privCMsgList[privCMsgList.length - 1] : false
+	return id ? snglMsgConstructor(id) : false
 }
 
 

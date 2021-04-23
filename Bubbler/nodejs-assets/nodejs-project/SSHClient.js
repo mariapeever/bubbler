@@ -22,7 +22,7 @@ rn_bridge.channel.on('message', (msg) => {
   conn.on('ready', function() {
       console.log('Client :: ready')
       // ${id} ${updated_at}
-      conn.exec(`./exec.js ${msg.id} ${msg.updatedAt}`, function(err, stream) {
+      conn.exec(`./exec.js ${msg.filter} ${msg.updatedAt} ${msg.query}`, function(err, stream) {
         if (err) throw err;
         stream.on('close', function(code, signal) {
           conn.end();

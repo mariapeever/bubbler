@@ -12,6 +12,10 @@ export const PageHeader = styled.View`
 	opacity: .9;
 	background-color: ${(props: StyledProps) => props.theme && props.theme.background.fadedWhite};
 	height: 91px;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: row;
+	padding: 39px 13px 0 26px;
 `
 
 

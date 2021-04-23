@@ -56,6 +56,10 @@ exports.PRIVATE_CHAT = {
 			'update-chat-settings',
 			'delete-chat',
 		],
+		SYSTEM: 
+		[
+			'send-system-messages'
+		],
 		ACTIVE:
 		[
 			'flag-participants',

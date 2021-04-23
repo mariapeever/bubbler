@@ -20,7 +20,7 @@ import {
 import { 
 	fetchPrivCMsgList, 
 	privCMsgListFetched, 
-	privCMsgListPushed,
+	onePrivCMsgListPushed,
 	selectPrivCMsgList_OK,
 	selectPrivCMsgList_Pending,
 	selectPrivCMsgList_Flagged,
@@ -128,7 +128,8 @@ const PrivateChatScreen = ({ navigation }) => {
 			selectPrivCMessagesFromList(privCMsgList_Removed) : []
 	})
 
-	const [privCMessages, setPrivCMessages] = useState(sortMessages([...privCMessages_OK, ...privCMessages_Pending]))
+	const [privCMessages, setPrivCMessages] = useState(
+		sortMessages([...privCMessages_OK, ...privCMessages_Pending]))
 
 	const [updatedAt, setUpdatedAt] = useState(() => 
 		selectPrivCMsgListById_UpdatedAt(messagesListId))
@@ -138,6 +139,8 @@ const PrivateChatScreen = ({ navigation }) => {
 	const [msgType, setMsgType] = useState('text')
 
 	const [addRequestStatus, setAddRequestStatus] = useState('idle')
+
+	const [pushing, setPushing] = useState('idle')
 
 	const canSend = msgContent && addRequestStatus === 'idle'
 
@@ -181,84 +184,96 @@ const PrivateChatScreen = ({ navigation }) => {
 	}, [navigation])
 
 	useEffect(() => {
-
-		nodejs.start('PrivcMsgListsClient.js');
+		let mounted = true
+		nodejs.start('SSHClient.js');
 	    nodejs.channel.addListener(
 	      'message',
-	      async (msg) => {
-	      	if (msg.indexOf('ObjectId') != -1) {
-	      		// console.log('SSH Push :: New message received')
-	      		pushMessages(msg) 
+	      (msg) => {
+
+	      	if (msg.indexOf('ObjectId') != -1 && mounted) {
+	      		// console.log('SSH Push :: New message received')	
+	      		pushMessages(msg)
+				setPushing('pending')	      		
 	      	} 
 	      },
 	      this
 	    )
+	    return cleanup = () => mounted = false
 	})
 
 	useEffect(() => {
 
-	    const interval = setInterval(() => {
-	  		// console.log('SSH Push :: Listening for messages.')
-	 
-			const updatedAt = selectPrivCMsgListById_UpdatedAt(privateChat.messagesList)
-			nodejs.channel.send({
-				id: messagesListId, 
-				updatedAt: updatedAt
-			})
-	    }, 500)
-	    return () => clearInterval(interval);
+		if (pushing === 'idle') {
+		    const interval = setInterval(() => {
+		  		// console.log('SSH Push :: Listening for messages.')
+
+				nodejs.channel.send({
+					filter: messagesListId, 
+					updatedAt: updatedAt,
+					query: 'privcmsglists_findone'
+				})
+		    }, 300)
+		    return () => clearInterval(interval);
+		}
 	    
 	}, [])
 
-
-
 	const loadPrivCMessages = async privCMsgList  => {
 		// console.log('PrivateChat :: Loading messages...')
+
 	    const fetchedPrivCMessages = privCMsgList.length ? 
 	      await dispatch(fetchPrivCMessagesFromList(privCMsgList))
 	              .then(unwrapResult) : false
-	    if (fetchedPrivCMessages) {
-	    	dispatch(privCMessagesFetchedFromList(fetchedPrivCMessages))
-	      return true
-	    }
+	    const loadedPrivCMessages = fetchedPrivCMessages ? 
+	    	await dispatch(privCMessagesFetchedFromList(fetchedPrivCMessages)) : false
+
+	    if (loadedPrivCMessages) return true
 	    return false
 	}
 
-	const pushMessages = async (msgs) => {
-		try {
-			console.log('PrivateChat :: Pushing messages...')
-			let list = await dispatch(privCMsgListPushed(msgs))
-	  		let reSelectedPrivCMsgList_OK = list ? selectPrivCMsgList_OK(messagesListId) : false
-	  		let reSelectedPrivCMsgList_Pending = list ? selectPrivCMsgList_Pending(messagesListId) : false
+	const pushMessages = async (msg) => {
+		if (pushing === 'pending') {
+			// console.log('PrivateChat :: Pushing messages...')
+			try {
+				let list = await dispatch(onePrivCMsgListPushed(msg))
+				
+		  		let reSelectedPrivCMsgList_OK = list ? 
+		  			selectPrivCMsgList_OK(messagesListId) : false
 
-	  		let mergedPrivCMsgList = [
-	  			reSelectedPrivCMsgList_OK, 
-	  			reSelectedPrivCMsgList_Pending].every(Boolean) ?
-	  			[...reSelectedPrivCMsgList_OK,
-	  			 ...reSelectedPrivCMsgList_Pending] : false
+		  		let reSelectedPrivCMsgList_Pending = list ? 
+		  			selectPrivCMsgList_Pending(messagesListId) : false
 
-	  		let reLoadedPrivMessages = mergedPrivCMsgList ? 
-	  			await loadPrivCMessages(mergedPrivCMsgList) : false
-	  		
-	  		let reSelectedPrivCMessages_OK = reLoadedPrivMessages ? 
-	  			selectPrivCMessagesFromList(reSelectedPrivCMsgList_OK) : false
+		  		let mergedPrivCMsgList = [
+		  			reSelectedPrivCMsgList_OK, 
+		  			reSelectedPrivCMsgList_Pending].every(Boolean) ?
+		  			[...reSelectedPrivCMsgList_OK,
+		  			 ...reSelectedPrivCMsgList_Pending] : false
 
-	  		let reSelectedPrivCMessages_Pending = reLoadedPrivMessages ? 
-	  			selectPrivCMessagesFromList(reSelectedPrivCMsgList_Pending) : false
+		  		let reLoadedMessages = mergedPrivCMsgList ? await loadPrivCMessages(mergedPrivCMsgList) : false
 
-	  		let sortedPrivCMessages = [
-	  			reSelectedPrivCMessages_OK, 
-	  			reSelectedPrivCMessages_Pending].every(Boolean) ? 
-	  			sortMessages(reSelectedPrivCMessages_OK, reSelectedPrivCMessages_Pending) : false
-	  		
-	  		if (sortedPrivCMessages) setPrivCMessages(sortedPrivCMessages)
-		} catch (err) {
-			console.error('Pushing messages: ', err)
-		} finally {
-			console.log('PrivateChat :: Pushing messages complete')
+		  		let reSelectedPrivCMessages_OK = reLoadedMessages ? 
+		  			selectPrivCMessagesFromList(reSelectedPrivCMsgList_OK) : false
+
+
+		  		let reSelectedPrivCMessages_Pending = reLoadedMessages ? 
+		  			selectPrivCMessagesFromList(reSelectedPrivCMsgList_Pending) : false
+
+		  		let sortedPrivCMessages = [
+		  			reSelectedPrivCMessages_OK, 
+		  			reSelectedPrivCMessages_Pending].every(Boolean) ? 
+		  			sortMessages([].concat.apply([], reSelectedPrivCMessages_OK, 
+				  			reSelectedPrivCMessages_Pending)) : false
+		  		
+		  		if (sortedPrivCMessages) setPrivCMessages(sortedPrivCMessages)
+		  		setPushing('success')
+			} catch (err) {
+				console.error('Pushing messages: ', err)
+				setPushing('fail')
+			} finally {
+				setPushing('idle')
+			}
 		}
- 
-	} 
+	}
 
 	const onSendClicked = async () => {
   	

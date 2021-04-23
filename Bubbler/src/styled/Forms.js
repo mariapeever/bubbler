@@ -49,7 +49,6 @@ export const MessageInput = styled.TextInput`
 	background-color: ${(props: StyledProps) => props.theme && props.theme.background.light};
     border-radius: 24px;
     color: ${(props: StyledProps) => props.theme && props.theme.color.body};
-    
 `
 
 export const InputBox = styled.View`
@@ -61,5 +60,27 @@ export const InputBox = styled.View`
 	background-color: ${(props: StyledProps) => props.theme && props.theme.background.fadedWhite};
 
 `
+
+export const ModalInput = styled.TextInput`
+	width: 100%;
+	margin: 6px 26px 7px; 
+	padding: 0 13px;
+	border-radius: 4px;
+	font-size: 16px;
+	background-color: ${(props: StyledProps) => props.theme && props.theme.background.white};
+	align-items: center;
+	align-content: center;
+	justify-content: center;
+	height: 46.5px;
+	shadow-color: "#000",
+	shadow-offset: {
+		width: 2,
+		height: 2,
+	};
+	shadow-opacity: 0.1;
+	shadow-radius: 5px;	
+`
+
+
 
 

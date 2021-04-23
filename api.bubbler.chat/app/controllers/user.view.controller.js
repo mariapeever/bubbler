@@ -7,57 +7,67 @@ const {
 	findOneUser,
 	findActiveUsers,
 	findOneAndUpdateUser,
-	findOneAndDeleteUser 
+	findOneUserByUsername,
+	findOneAndDeleteUser,
+	findUsersByRegex 
 } = require('./user.model.controller');
 
 const { createAuth } = require('./auth.model.controller');
 
 exports.create = async (req, res) => {
 
-	var plainPassword = req.sanitize(req.body.password);
+	var username = req.sanitize(req.body.username);
+	var checkExistingUsername = await findOneUserByUsername(username, res);
+	console.log('checkExistingUsername',checkExistingUsername)
+	if (!checkExistingUsername) {
+		var plainPassword = req.sanitize(req.body.password);
 	
-	const bcrypt = require('bcrypt');
-  	const saltRounds = 10;
+		const bcrypt = require('bcrypt');
+	  	const saltRounds = 10;
 
- 	// hash the password and save user data
-	bcrypt.hash(plainPassword, saltRounds, async (err, hashedPassword) => {
-		if (err) throw err;
+	 	// hash the password and save user data
+		bcrypt.hash(plainPassword, saltRounds, async (err, hashedPassword) => {
+			if (err) throw err;
 
-		var firstName = req.sanitize(req.body.firstName);
-		var lastName = req.sanitize(req.body.lastName);
-		var email = req.sanitize(req.body.email);
-		var mobile = req.body.mobile ? req.sanitize(req.body.mobile) : "";
-		var dob = req.sanitize(req.body.dob);
-		// var image =
-		var privacy = config.PRIVACY.USER
+			var firstName = req.sanitize(req.body.firstName);
+			var lastName = req.sanitize(req.body.lastName);
+			var email = req.sanitize(req.body.email);
+			var mobile = req.body.mobile ? req.sanitize(req.body.mobile) : "";
+			var dob = req.sanitize(req.body.dob);
+			// var image =
+			var privacy = config.PRIVACY.USER
 
-		var user = await createUser({ 
-			firstName: firstName,
-			lastName: lastName,
-			email: email,
-			mobile: mobile,
-			dob: dob,
-			status: "pending",
-			privacy: 
-			{
-				firstName: privacy.FIRST_NAME,
-				lastName: privacy.LAST_NAME,
-				dob: privacy.DOB,
-				mobile: privacy.MOBILE,
-				email: privacy.EMAIL
-			},
-	 	}, res);
+			var user = await createUser({ 
+				firstName: firstName,
+				lastName: lastName,
+				email: email,
+				mobile: mobile,
+				dob: dob,
+				status: "pending",
+				privacy: 
+				{
+					firstName: privacy.FIRST_NAME,
+					lastName: privacy.LAST_NAME,
+					dob: privacy.DOB,
+					mobile: privacy.MOBILE,
+					email: privacy.EMAIL
+				},
+		 	}, res);
 
-		var username = req.sanitize(req.body.username);
+			
 
-		var auth = await createAuth({ 
-			user: user._id,
-			username: username,
-			password: hashedPassword
-		}, res);
+			var auth = await createAuth({ 
+				user: user._id,
+				username: username,
+				password: hashedPassword
+			}, res);
 
-		res.json({user});
-	});
+			res.json({user});
+		});
+	} else {
+		res.json('Username not available.')
+	}
+	
 };
 
 exports.find = async (req, res) => {
@@ -71,6 +81,18 @@ exports.find = async (req, res) => {
 	ids.forEach(id => req.sanitize(id));
 
 	var users = await findUsers(ids, res);
+	res.json(users);
+};
+
+exports.findByRegex = async (req, res) => {
+	if (!req.params.regex) {
+		return res.status(400).send({
+			message: 'Query must not be empty.'
+		});
+	}
+	var regex = req.sanitize(req.params.regex);
+	
+	var users = await findUsersByRegex(regex, res);
 	res.json(users);
 };
 

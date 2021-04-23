@@ -56,6 +56,22 @@ export const fetchUsersFromList = createAsyncThunk('user', async list => {
 	
 })
 
+
+export const fetchUsersByRegex = createAsyncThunk('user', async regex => {
+	console.log(regex)
+	var url = `http://localhost:8000/api/users/regex/${regex}`
+	return await fetch(url)
+	    .then(response => response.json())
+			.then(data => {
+
+				return data
+			})
+				.catch(error =>{
+					console.error(error)
+				})
+	
+})
+
 export const createUser = createAsyncThunk('user', async user => {
 	
 	return await fetch('http://localhost:8000/api/users/', {
@@ -68,6 +84,7 @@ export const createUser = createAsyncThunk('user', async user => {
     })
 	    .then((response) => response.json())
 			.then((data) => {
+				console.log('data',data)
 				return data
 			})
 				.catch((error) =>{
