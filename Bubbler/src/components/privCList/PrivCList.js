@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import nodejs from 'nodejs-mobile-react-native'
 
 import { extractId } from '../../utils'
-import { selectUserById } from '../../reducers/usersSlice'
+import { selectUser, selectUserById } from '../../reducers/usersSlice'
 import { 
 	selectPrivCList_Active,
 
@@ -15,7 +15,7 @@ import {
 import { selectPrivateChatsFromList } from '../../reducers/privateChatsSlice'
 
 import { 
-	privCMsgListPushed,
+	privCMsgListsPushed,
 	selectPrivCMsgList_OK,
 	selectPrivCMsgList_Pending,
 	selectPrivCMsgListById_UpdatedAt } from '../../reducers/privCMsgListsSlice'
@@ -68,33 +68,11 @@ import PrivCListHeader from './PrivCListHeader'
 
 
 const PrivCListScreen = ({ navigation }) => {
-	
+
+
 	const selectPrivateChats_Active = () => {
 		const privCList_Active = selectPrivCList_Active()
 		return selectPrivateChatsFromList(privCList_Active) 
-	}
-
-	const selectLastMsg = (privCMsgListId) => {
-		let privCMsgList_OK = privCMsgListId != '' ? 
-			selectPrivCMsgList_OK(privCMsgListId) : false
-		
-  		let privCMsgList_Pending = privCMsgListId != '' ? 
-  			selectPrivCMsgList_Pending(privCMsgListId) : false
-  		
-  		let privCMessages_OK = privCMsgList_OK ? 
-  			selectPrivCMessagesFromList(privCMsgList_OK) : false
-  		let privCMessages_Pending = privCMsgList_Pending ? 
-  			selectPrivCMessagesFromList(privCMsgList_Pending) : false
-
-  		let sortedPrivCMessages = [
-  			privCMessages_OK, 
-  			privCMessages_Pending].every(Boolean) ? 
-  			sortMessages(privCMessages_OK, privCMessages_Pending) : false
-
-  		let sortedPrivCMessagesIds = sortedPrivCMessages.map(e => e.id)
-
-  		return sortedPrivCMessages.length ? 
-  			selectLastMessageFromList(sortedPrivCMessagesIds) : false
 	}
 
 	const selectMsgUser = (msgParticipantId) => {
@@ -102,51 +80,57 @@ const PrivCListScreen = ({ navigation }) => {
 		return msgParticipant ? selectUserById(msgParticipant.user) : false
 	}
 
-	const selectLastMsgProperty = (prop, messagesListId)  => {
-		let lastMsg = selectLastMsg(messagesListId)
-		return lastMsg ? lastMsg[prop] : false
-	}
-
 	const selectPrivateChatsLastMsgProperty = prop => {
-		return privateChats.map(e => selectLastMsgProperty(prop, e.messagesList))
+		return privCMessages.map(e => e[prop])
 	}
 
-	const sortMessages = (msgs) => {
-
-		return msgs.sort((a, b) => {
-			let dateA = new Date(a.createdAt)
-			let dateB = new Date(b.createdAt)
-
-			if (dateA < dateB) return -1
-			if (dateB > dateB) return 1
+	const sortByDate = (array, order=1, prop=false) => {
+		
+		return array ? array.sort((a, b) => {
+			let dateA = new Date(prop ? a[prop] : a).getTime()
+			let dateB = new Date(prop ? b[prop] : b).getTime()
+			if (dateA < dateB) {
+				return order
+			}
+			if (dateA > dateB) {
+				return -order
+			}
 			return 0
-		})
+		}) : []
 	}
+
+	const user = selectUser()
 
 	const [privateChats, setPrivateChats] = useState(
 		selectPrivateChats_Active())
 
-	const [privCMsgLists_OK, setPrivCMsgLists_OK] = useState(privateChats.map(e => 
-		selectPrivCMsgList_OK(e.messagesList)))
+	const [privCMsgLists_OK, setPrivCMsgLists_OK] = useState([].concat.apply([], 
+		privateChats.map(e => {
+			let list = selectPrivCMsgList_OK(e.messagesList)
+			return list.length ? list[list.length - 1] : []
+		})
+	))
+
+	const [privCMsgLists_Pending, setPrivCMsgLists_Pending] = useState([].concat.apply([], 
+		privateChats.map(e => {
+			let list = selectPrivCMsgList_Pending(e.messagesList)
+			return list.length ? list[list.length - 1] : []
+		})
+	))
+
+	const [privCMessages_OK, setPrivCMessages_OK] = useState(
+		selectPrivCMessagesFromList(privCMsgLists_OK))
+
+	const [privCMessages_Pending, setPrivCMessages_Pending] = useState(
+		selectPrivCMessagesFromList(privCMsgLists_Pending))
+
+	const [privCMessages, setPrivCMessages] = useState(privCMessages_OK.map((e, i) => 
+		sortByDate([e, privCMessages_Pending[i]], 1, 'createdAt')[0]))
 		
-	const [privCMsgLists_Pending, setPrivCMsgLists_Pending] = useState(privateChats.map(e => 
-		selectPrivCMsgList_Pending(e.messagesList)))
-
-	const [privCMessages_OK, setPrivCMessages_OK] = useState(privCMsgLists_OK.map((e, i) => {
-		return e.length ? 
-			selectPrivCMessagesFromList(e) : []
-	}))
-
-	const [privCMessages_Pending, setPrivCMessages_Pending] = useState(privCMsgLists_Pending.map((e, i) => {
-		return e.length ? 
-			selectPrivCMessagesFromList(e) : []
-	}))
-
-	const [privCMessages, setPrivCMessages] = useState(sortMessages(
-		[...privCMessages_OK, ...privCMessages_Pending]))
-
-	const [pushing, setPushing] = useState({status: 'idle', index: ''})
+	const [pushing, setPushing] = useState('idle')
 	
+	const [privCIndex, setPrivCIndex] = useState(0)
+
 	const [updatedAt, setUpdatedAt] = useState(privateChats.map(e => 
 		selectPrivCMsgListById_UpdatedAt(e.messagesList)))
 
@@ -158,120 +142,152 @@ const PrivCListScreen = ({ navigation }) => {
 			return e ? dateToTimeDateLabel(e) : false
 		})
 	)
-
 	const [lastMsgsUserFirstName, setLastMsgsUserFirstName] = useState(() => {
 		var lastMsgParticipants = selectPrivateChatsLastMsgProperty('participant')
 		return lastMsgParticipants.map(e => selectMsgUser(e).firstName)
 	})
 	
 	useEffect(() => {
-		nodejs.start('PrivcMsgListsClient.js');
+		let mounted = true
+		nodejs.start('SSHClient.js');
 	    nodejs.channel.addListener(
 	      'message',
-	      async (msg) => {
+	      (msg) => {
 	      	// console.log('PrivCList :: Listening for messages...')
-	      	if (msg.indexOf('ObjectId') != -1) {
-	      		// console.log('SSH Push :: New message received', msg)
-	      		pushMessages(msg) 
+	      	if (msg.indexOf('ObjectId') != -1 && mounted) {
+	      		// console.log('SSH Push :: New message received')
+	      		pushMessages(msg)
+	      		setPushing('pending')
 	      	} 
 	      },
 	      this
 	    )
-	})
+	    return cleanup = () => mounted = false
+ 	})
 
 	useEffect(() => {
-		var interval = setInterval(() => {
-			let updatedAt = selectPrivCMsgListById_UpdatedAt(privateChats[0].messagesList)
-		 			
-	  		// console.log('SSH Push :: Checking for messages...')
-			nodejs.channel.send({
-				id: privateChats[0].messagesList, 
-				updatedAt: updatedAt
-			})
-		}, 500)
-		return () => clearInterval(interval);
 
-	}, [])
+		if (pushing === 'idle') {
+			var interval = setInterval(() => {
+		 	
+		  		// console.log('SSH Push :: Checking for messages...')
 
-	useEffect(() => {
-		if (pushing.status === 'complete') {
-			let privCMsgListId = pushing.index
-			let privCMsgListsIds = privateChats.map(e => e.messagesList)
-			let index = privCMsgListsIds.indexOf(privCMsgListId)
+		  		let updated = sortByDate(updatedAt, 1)[0]
 
-			setUpdatedAt(updatedAt.map((e, i) => i === index ? 
-					selectPrivCMsgListById_UpdatedAt(privCMsgListId) : e))
+				nodejs.channel.send({
+					filter: user.privateChats, 
+					updatedAt: updated,
+					query: 'privcmsglists_find'
+				})
+			}, 500)
 
-			setLastMsgsContent(lastMsgsContent.map((e, i) => i === index ?
-				selectLastMsgProperty('content', privCMsgListId) : e))
-
-			setLastMsgsCreatedAt(lastMsgsCreatedAt.map((e, i) => i === index ?
-				dateToTimeDateLabel(selectLastMsgProperty('createdAt', privCMsgListId)) : e))
-
-			setLastMsgsUserFirstName(lastMsgsUserFirstName.map((e, i) => {
-				if (i === index) {
-					var lastMsgParticipant = selectLastMsgProperty('participant', privCMsgListId) 
-					return selectMsgUser(lastMsgParticipant).firstName
-				}
-				return e
-			}))
-			setPushing({status: 'idle', index: ''})
+			return () => clearInterval(interval);
 		}
-			
-	})
+		
+	}, [])
 
 	const loadPrivCMessages = async privCMsgList  => {
 		// console.log('PrivCList :: Loading messages...')
 	    const fetchedPrivCMessages = privCMsgList.length ? 
 	      await dispatch(fetchPrivCMessagesFromList(privCMsgList))
 	              .then(unwrapResult) : false
-	    if (fetchedPrivCMessages) {
-	    	var test = await dispatch(privCMessagesFetchedFromList(fetchedPrivCMessages))
-	      	return true
-	    }
+
+	    const loadedPrivCMessages = fetchedPrivCMessages ? await dispatch(privCMessagesFetchedFromList(fetchedPrivCMessages)) : false
+
+	    if (loadedPrivCMessages) return true
 	    return false
 	}
 
 	const pushMessages = async (msg) => {
-		try {
-			console.log('PrivCList :: Pushing messages...')
-			
-			let privCMsgListPayload = await dispatch(privCMsgListPushed(msg))
-			let privCMsgListId = extractId(privCMsgListPayload)
-	  		let reSelectedPrivCMsgList_OK = privCMsgListId ? selectPrivCMsgList_OK(privCMsgListId) : false
+		
+		// console.log('PrivCList :: Pushing messages...')
+		if (pushing === 'pending') {
 
-	  		let reSelectedPrivCMsgList_Pending = privCMsgListId ? selectPrivCMsgList_Pending(privCMsgListId) : false
-	  		
-	  		let mergedPrivCMsgList = [
-	  			reSelectedPrivCMsgList_OK, 
-	  			reSelectedPrivCMsgList_Pending].every(Boolean) ?
-	  			[...reSelectedPrivCMsgList_OK,
-	  			 ...reSelectedPrivCMsgList_Pending] : false
-	  		let reLoadedPrivMessages = mergedPrivCMsgList ? 
-	  			await loadPrivCMessages(mergedPrivCMsgList) : false
-	  		let reSelectedPrivCMessages_OK = reLoadedPrivMessages ? 
-	  			selectPrivCMessagesFromList(reSelectedPrivCMsgList_OK) : false
-	  		let reSelectedPrivCMessages_Pending = reLoadedPrivMessages ? 
-	  			selectPrivCMessagesFromList(reSelectedPrivCMsgList_Pending) : false
-	  		let sortedPrivCMessages = [
-	  			reSelectedPrivCMessages_OK, 
-	  			reSelectedPrivCMessages_Pending].every(Boolean) ? 
-	  			sortMessages([...reSelectedPrivCMessages_OK, ...reSelectedPrivCMessages_Pending]) : false
+			try {
+				// console.log('PrivCList :: Pushing messages...')
+				let privCMsgListPayload = await dispatch(privCMsgListsPushed(msg))
+				
+				let list = privCMsgListPayload.payload
+				let length = Object.keys(list).length
+				Object.entries(list).forEach(async ([key, value]) => {
+					let privCMsgListId = key 
 
-	  		let pushedPrivCMessages = sortedPrivCMessages ? setPrivCMessages(sortedPrivCMessages) : false
-	  		
-	  		
-	  		setPushing({status: 'complete', index: privCMsgListId})
+					let reSelectedPrivCMsgList_OK = privCMsgListId ? 
+						selectPrivCMsgList_OK(privCMsgListId) : false
+
+			  		setPrivCMsgLists_OK(privCMsgLists_OK.map((e, i) => i === privCMsgListId ? 
+			  			reSelectedPrivCMsgList_OK.length ? 
+			  				reSelectedPrivCMsgList_OK[reSelectedPrivCMsgList_OK.length - 1] : '' : e))
+
+			  		let reSelectedPrivCMsgList_Pending = privCMsgListId ? 
+			  			selectPrivCMsgList_Pending(privCMsgListId) : false
+
+			  		setPrivCMsgLists_Pending(privCMsgLists_Pending.map((e, i) => 
+				  		i === privCMsgListId ? 
+				  			reSelectedPrivCMsgList_Pending.length ? 
+				  				reSelectedPrivCMsgList_Pending[reSelectedPrivCMsgList_Pending.length - 1] : '' : e))
+				  		
+			  		let mergedPrivCMsgList = [
+			  			reSelectedPrivCMsgList_OK.length, 
+			  			reSelectedPrivCMsgList_Pending.length].some(Boolean) ?
+			  			[...reSelectedPrivCMsgList_OK, 
+			  			 ...reSelectedPrivCMsgList_OK] : false
+
+			  		let reLoadedMessages = mergedPrivCMsgList ? 
+			  			await loadPrivCMessages(mergedPrivCMsgList) : false
+			  		
+			  		let reSelectedPrivCMsgList_OK_LastMsg = reLoadedMessages ? 
+			  			selectLastMessageFromList(reSelectedPrivCMsgList_OK) : false
 
 
-		} catch (err) {
-			
-			console.log('PrivCList :: Pushing messages: ', err)
-		} finally {
-			console.log('PrivCList :: Pushing messages complete')
+			  		let reSelectedPrivCMsgList_Pending_LastMsg = reLoadedMessages ? 
+			  			selectLastMessageFromList(reSelectedPrivCMsgList_Pending) : false
+			  		
+			  		let reSelectedPrivCMessage_OK = reSelectedPrivCMsgList_OK_LastMsg ? 
+			  			[reSelectedPrivCMsgList_OK_LastMsg] : []
+
+			  		let reSelectedPrivCMessage_Pending = reSelectedPrivCMsgList_Pending_LastMsg ? 
+			  			[reSelectedPrivCMsgList_Pending_LastMsg] : []
+
+			  		let lastPrivCMessage = [
+			  			reSelectedPrivCMessage_OK, 
+			  			reSelectedPrivCMessage_Pending].some(Boolean) ?
+			  			sortByDate([].concat.apply([], reSelectedPrivCMessage_OK, 
+			  			reSelectedPrivCMessage_Pending), 1, 'createdAt')[0] : false
+
+			  		let privCMsgIndex = privateChats.map(e => e.messagesList).indexOf(privCMsgListId) 
+
+			  		setPrivCMessages_OK(privCMessages_OK.map((e, i) => i === privCMsgIndex ? reSelectedPrivCMsgList_OK_LastMsg : e))
+			  		setPrivCMessages_Pending(privCMessages_Pending.map((e, i) => i === privCMsgIndex ? reSelectedPrivCMsgList_Pending_LastMsg : e))
+			  		setPrivCMessages(privCMessages.map((e, i) => i === privCMsgIndex ? lastPrivCMessage : e))
+
+					setUpdatedAt(updatedAt.map((e, i) => i === privCMsgIndex ? 
+						selectPrivCMsgListById_UpdatedAt(privCMsgListId) : e))
+
+					setLastMsgsContent(lastMsgsContent.map((e, i) => i === privCMsgIndex ?
+						lastPrivCMessage['content'] : e))
+
+					setLastMsgsCreatedAt(lastMsgsCreatedAt.map((e, i) => i === privCMsgIndex ?
+						dateToTimeDateLabel(lastPrivCMessage['createdAt']) : e))
+
+					setLastMsgsUserFirstName(lastMsgsUserFirstName.map((e, i) => {
+						if (i === privCMsgIndex) {
+							var lastMsgParticipant = lastPrivCMessage['participant'] 
+							return selectMsgUser(lastMsgParticipant).firstName
+						}
+						return e
+					}))	
+				})
+			  	setPushing('success')
+			} catch (err) {
+				setPushing('fail')
+				console.log('PrivCList :: Pushing messages: ', err)
+			} finally {
+				setPushing('idle')
+				// console.log('PrivCList :: Pushing messages complete')
+			}
 		}
-	} 
-
+	}
 
 	const dispatch = useDispatch()
 
@@ -281,7 +297,6 @@ const PrivCListScreen = ({ navigation }) => {
 		lastMsgContent = lastMsgContent ? lastMsgContent : 'No messages yet.'
 		let lastMsgCreatedAt = lastMsgsCreatedAt[index]
 		lastMsgCreatedAt = lastMsgCreatedAt ? lastMsgCreatedAt : ''
-
 		let lastMsgUserFirstName = lastMsgsUserFirstName[index]
 		lastMsgUserFirstName = lastMsgUserFirstName ? `${lastMsgUserFirstName}: ` : ''
 

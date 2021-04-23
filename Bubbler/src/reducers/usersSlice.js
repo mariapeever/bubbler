@@ -68,6 +68,7 @@ export const createUser = createAsyncThunk('user', async user => {
     })
 	    .then((response) => response.json())
 			.then((data) => {
+				console.log('data',data)
 				return data
 			})
 				.catch((error) =>{

@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 
 import { 
 	userReducer,
@@ -19,7 +19,8 @@ const store = configureStore({
 		privCMessages: privCMessagesReducer,
 		privCParticLists: privCParticListsReducer,
 		privCParticipants: privCParticipantsReducer,
-	}
+	},
+	middleware: [...getDefaultMiddleware({immutableCheck: false})]
 });
 
 export default store

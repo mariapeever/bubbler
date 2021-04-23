@@ -9,15 +9,23 @@ const {
 
 const { findOneAuth } = require('./auth.model.controller');
 
-const { findOneUser, findOneAndUpdateUser } = require('./user.model.controller');
+const { findOneUser, findOneUserByStatus, findOneAndUpdateUser, createUser } = require('./user.model.controller');
 
-const { createRole } = require('./role.model.controller');
+const { createRole, findOneRoleByName } = require('./role.model.controller');
 
 const {
 	createPrivCList,
 	findOnePrivCList,
 	findOneAndUpdatePrivCList
 } = require('./privc-list.model.controller');
+
+const {
+	createPrivCMsgList
+} = require('./privc-msg-list.model.controller');
+
+const {
+	createPrivCMessage
+} = require('./privc-message.model.controller');
 
 const { 
 	createPrivCParticipant 
@@ -29,6 +37,90 @@ const {
 
 exports.create = async (req, res) => {
 	// sanitize fields
+	var auth = await findOneAuth(req.session.authId, res);
+	var adminRole = await findOneRoleByName("admin", res);
+	if(!adminRole) {
+		adminRole = await createRole({
+			name: "admin",
+			privileges: config.PRIVATE_CHAT.ROLES.ADMIN
+		}, res);
+	}
+
+	var admin = await findOneUser(auth.user, res);
+	// create PrivateChatParticipant for admin
+	var chatAdmin = await createPrivCParticipant({
+		user: auth.user,
+		role: adminRole._id,
+		status: "active"
+	}, res);
+
+	var system = await findOneUserByStatus("system", res);
+
+	if (!system) {
+		system = await createUser({ 
+			firstName: 'System',
+			email: 'system@bubbler.chat',
+			status: "system",
+			privacy: 
+			{
+				firstName: 'public',
+				email: 'public'
+			},
+	 	}, res);
+	}
+
+	var systemRole = await findOneRoleByName("system", res);
+	console.log('systemRole', systemRole);
+	if (!systemRole) {
+		systemRole = await createRole({
+			name: "system",
+			privileges: config.PRIVATE_CHAT.ROLES.SYSTEM
+		}, res);
+		console.log('systemRole 2', systemRole);
+	}
+
+	var chatSystem = await createPrivCParticipant({
+		user: system._id,
+		role: systemRole._id,
+		status: "system"
+	}, res);
+
+	var participants = {};
+
+	participants.admin = [chatAdmin._id];
+	participants.system = [system._id];
+
+	// create other roles and participants (as necessary)
+	if (req.body.participants) {
+		var privCParticipants = req.body.participants;
+		if (privCParticipants.admin) {
+			delete privCParticipants.admin;
+		}
+
+		for (let [key, val] of Object.entries(config.PRIVATE_CHAT.ROLES)) {
+
+			var keyLower = key.toLowerCase();
+			
+			var role = await createRole({
+					name: keyLower,
+					privileges: val
+			}, res);
+			if(privCParticipants[keyLower]) {
+				participants[keyLower] = [];
+				for (var i = 0; i < privCParticipants[keyLower].length; i++) {
+					;
+					let userId = req.sanitize(privCParticipants[keyLower][i]);
+					
+					let privCParticipant = await createPrivCParticipant({
+						user: userId,
+						role: role._id,
+						status: key == "ADMIN" ? "active" : "invited"
+					}, res);
+					participants[keyLower].push(privCParticipant._id);
+				}	
+			} 
+		}
+	}
 
 	var privCObj = {};
 
@@ -44,57 +136,30 @@ exports.create = async (req, res) => {
 		privCObj.description = '';
 	}
 
-	var auth = await findOneAuth(req.session.authId, res);
-	var adminRole = await createRole({
-		name: "admin",
-		privileges: config.PRIVATE_CHAT.ROLES.ADMIN
-	}, res);
-	var admin = await findOneUser(auth.user, res);
-	// create PrivateChatParticipant for admin
-	var chatAdmin = await createPrivCParticipant({
-		user: auth.user,
-		role: adminRole._id,
-		status: "active"
-	}, res);
-	var participants = {};
-
-	participants.admin = [chatAdmin._id];
-
-	// create other roles and participants (as necessary)
-	if (req.body.participants) {
-		var privCParticipants = req.body.participants;
-		if (privCParticipants.admin) {
-			delete privCParticipants.admin;
-		}
-
-		for (let [key, val] of Object.entries(config.PRIVATE_CHAT.ROLES)) {
-
-			var keyLower = key.toLowerCase();
-			var role = await createRole({
-					name: keyLower,
-					privileges: val
-			}, res);
-			if(privCParticipants[keyLower]) {
-				participants[keyLower] = [];
-				for (var i = 0; i < privCParticipants[keyLower].length; i++) {
-					
-					let userId = req.sanitize(privCParticipants[keyLower][i]);
-
-					let privCParticipant = await createPrivCParticipant({
-						user: userId,
-						role: role._id,
-						status: key == "ADMIN" ? "active" : "invited"
-					}, res);
-					participants[keyLower].push(privCParticipant._id);
-				}	
-			} 
-		}
-	}
-
 	var privCParticList = await createPrivCParticList(participants, res);
+
 	privCObj.participantsList = privCParticList._id;
 
+	var message = await createPrivCMessage({
+		participant: system._id,
+		type: 'system',
+		content: new Date(),
+		status: 'ok'
+	});
+
+	console.log('message',message)
+
+	var messagesList = await createPrivCMsgList({
+		ok: [message._id]
+	}, res);
+
+	console.log('messagesList',messagesList)
+
+	privCObj.messagesList = messagesList._id;
+
 	var privateChat = await createPrivateChat(privCObj, res);
+
+
 	// Notify participants !!!
 	if (!admin.privateChats) {
 
@@ -104,7 +169,7 @@ exports.create = async (req, res) => {
 				participant: chatAdmin._id
 			}]
 		}, res);
-		findOneAndUpdateUser(admin.id, {
+		await findOneAndUpdateUser(admin.id, {
 			privateChats: privCList._id
 		})
 
@@ -114,14 +179,13 @@ exports.create = async (req, res) => {
 			privateChat: privateChat._id, 
 			participant: chatAdmin._id
 		});
-		findOneAndUpdatePrivCList(admin.privateChats, {
+		await findOneAndUpdatePrivCList(admin.privateChats, {
 			active: privCList.active
 		}, res);
 		var privCList2 = await findOnePrivCList(admin.privateChats, res);
 	}
 
 	res.json(privateChat);
-	
 };
 
 exports.findOne = async (req, res) => {

@@ -7,7 +7,7 @@ exports.createPrivCList = async (obj, res) => {
 
 	return await privCList.save()
 		.catch(err => {
-			res.status(500).send({ message: err });
+			return res.status(500).send({ message: err });
 		});	
 };
 
@@ -19,11 +19,11 @@ exports.findOnePrivCList = async (id, res) => {
 				if (!privCList) throw 'Private chats list not found.';
 				return privCList;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {
-				res.status(500).send({ message: err });
+				return res.status(500).send({ message: err });
 			});
 };
 
@@ -35,10 +35,10 @@ exports.findOneAndUpdatePrivCList = async (id, obj, res) => {
 				if (!privCList) throw 'Private chats list not found.';
 				return privCList;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {
-				res.status(500).send({ message: err });
+				return res.status(500).send({ message: err });
 			});
 };

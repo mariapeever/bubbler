@@ -20,7 +20,7 @@ import {
 
 import SettingsHeader from '../SettingsHeader'
 
-const EditMobileScreen = ({ navigation }) => {
+const EditEmailScreen = ({ navigation }) => {
 
   const user = selectUser()
 
@@ -89,7 +89,7 @@ const EditMobileScreen = ({ navigation }) => {
 const EditEmail= ({ navigation }) => {
   
   return(
-    <Container screen={<EditMobile navigation={ navigation } />} />
+    <Container screen={<EditEmailScreen navigation={ navigation } />} />
   )
 }
 

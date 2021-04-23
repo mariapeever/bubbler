@@ -28,9 +28,9 @@ const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('test@email.com')
   const [dob, setDob] = useState(new Date(1598051730000).toJSON())
   const [mobile, setMobile] = useState('078626575576')
-  const [username, setUsername] = useState('test3626')
-  const [password, setPassword] = useState('1ehG8_43d')
-  const [rePassword, setRePassword] = useState('1ehG8_43d')
+  const [username, setUsername] = useState('test36263237')
+  const [password, setPassword] = useState('1ehG8_423d')
+  const [rePassword, setRePassword] = useState('1ehG8_423d')
 
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 

@@ -20,7 +20,7 @@ exports.findOnePrivCParticipant = async (id, res) => {
 				if (!partic) throw 'Participant not found.';
 				return partic;
 			} catch {
-				res.status(404).send({ message: err });
+				return false;
 			}	
 		})
 			.catch(err => {
@@ -37,9 +37,8 @@ exports.findPrivCParticipants = async (ids, res) => {
 				if (!participants) throw 'Private chat participants not found.';
 				return participants;
 			} catch {
-				res.status(404).send({ message: 'Not found' });
+				return false;
 			}
-			return data
 		})
 			.catch(err => {
 				res.status(500).send({ message: err });

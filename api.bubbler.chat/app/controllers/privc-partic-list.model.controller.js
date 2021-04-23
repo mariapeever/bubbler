@@ -18,7 +18,7 @@ exports.findOnePrivCParticList = async (id, res) => {
 				if (!list) throw 'Messages list not found';
 				return list;
 			} catch {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {
@@ -34,7 +34,7 @@ exports.findOneAndUpdatePrivCParticList = async (id, obj, res) => {
 				if (!privCParticList) throw 'Private chats messages list not found.';
 				return privCParticList;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {

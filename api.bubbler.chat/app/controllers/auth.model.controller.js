@@ -11,11 +11,11 @@ exports.findOneAuth = async (id, res) => {
 				if (!auth) throw 'Auth not found.';
 				return auth;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {
-				res.status(500).send({ message: err });
+				return res.status(500).send({ message: err });
 			});
 };
 
@@ -27,11 +27,11 @@ exports.findOneAuthByUsername = async (username, res) => {
 				if (!auth) throw `User ${username} not found.`;
 				return auth;
 			} catch (err) {
-				return res.status(404).send({ message: err });
+				return false
 			}
 		})
 			.catch(err => {
-				res.status(500).send({ message: err });
+				return res.status(500).send({ message: err });
 			});
 }
 
@@ -40,7 +40,7 @@ exports.createAuth = async (obj, res) => {
 
 	return await auth.save(auth)
 		.catch(err => {
-			res.status(500).send({ message: err });
+			return res.status(500).send({ message: err });
 		});
 };
 
@@ -52,11 +52,11 @@ exports.findOneAndUpdateAuth = async (id, obj, res) => {
 				if (!auth) throw 'Auth not found.';
 				return auth;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 		.catch(err => {
-			res.status(500).send({ message: err });
+			return res.status(500).send({ message: err });
 		});
 };
 
@@ -68,11 +68,11 @@ exports.findOneAndDeleteAuth = async (id, res) => {
 				if (!auth) throw 'Auth not found.';
 				return auth;
 			} catch (err) {
-				res.status(404).send({ message: err });
+				return false;
 			}
 		})
 			.catch(err => {
-				res.status(500).send({ message: err });
+				return res.status(500).send({ message: err });
 			});
 };
 
