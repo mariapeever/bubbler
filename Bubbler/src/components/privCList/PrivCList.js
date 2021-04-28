@@ -4,6 +4,8 @@ import { pure } from 'recompose'
 
 import { useDispatch } from 'react-redux'
 
+import { useRoute } from '@react-navigation/native'
+
 import nodejs from 'nodejs-mobile-react-native'
 
 import { extractId } from '../../utils'
@@ -12,7 +14,10 @@ import {
 	selectPrivCList_Active,
 
 } from '../../reducers/privCListSlice'
-import { selectPrivateChatsFromList } from '../../reducers/privateChatsSlice'
+import { 
+	genObjectID, 
+	selectNextObjectID, 
+	selectPrivateChatsFromList } from '../../reducers/privateChatsSlice'
 
 import { 
 	privCMsgListsPushed,
@@ -65,10 +70,8 @@ import {
 
 import PrivCListHeader from './PrivCListHeader'
 
-
-
 const PrivCListScreen = ({ navigation }) => {
-
+	
 
 	const selectPrivateChats_Active = () => {
 		const privCList_Active = selectPrivCList_Active()
@@ -81,7 +84,7 @@ const PrivCListScreen = ({ navigation }) => {
 	}
 
 	const selectPrivateChatsLastMsgProperty = prop => {
-		return privCMessages.map(e => e[prop])
+		return privCMessages ? privCMessages.map(e => e[prop]) : false
 	}
 
 	const sortByDate = (array, order=1, prop=false) => {
@@ -100,6 +103,7 @@ const PrivCListScreen = ({ navigation }) => {
 	}
 
 	const user = selectUser()
+
 
 	const [privateChats, setPrivateChats] = useState(
 		selectPrivateChats_Active())
@@ -146,6 +150,61 @@ const PrivCListScreen = ({ navigation }) => {
 		var lastMsgParticipants = selectPrivateChatsLastMsgProperty('participant')
 		return lastMsgParticipants.map(e => selectMsgUser(e).firstName)
 	})
+
+
+	useEffect(() => {
+	  	// Subscribe for the focus Listener
+	 	const unsubscribe = navigation.addListener('focus', () => {
+	 		genObjectID()
+	  		
+		  	setPrivateChats(
+				selectPrivateChats_Active())
+
+			setPrivCMsgLists_OK([].concat.apply([], 
+				privateChats.map(e => {
+					let list = selectPrivCMsgList_OK(e.messagesList)
+					return list.length ? list[list.length - 1] : []
+				})
+			))
+
+			setPrivCMsgLists_Pending([].concat.apply([], 
+				privateChats.map(e => {
+					let list = selectPrivCMsgList_Pending(e.messagesList)
+					return list.length ? list[list.length - 1] : []
+				})
+			))
+
+			setPrivCMessages_OK(
+				selectPrivCMessagesFromList(privCMsgLists_OK))
+
+			setPrivCMessages_Pending(
+				selectPrivCMessagesFromList(privCMsgLists_Pending))
+
+			setPrivCMessages(privCMessages_OK.map((e, i) => 
+				sortByDate([e, privCMessages_Pending[i]], 1, 'createdAt')[0]))
+				
+			setPushing('idle')
+			
+			setPrivCIndex(0)
+
+			setUpdatedAt(privateChats.map(e => 
+				selectPrivCMsgListById_UpdatedAt(e.messagesList)))
+
+			setLastMsgsContent(
+				selectPrivateChatsLastMsgProperty('content'))
+
+			setLastMsgsCreatedAt(
+				selectPrivateChatsLastMsgProperty('createdAt').map(e => {
+					return e ? dateToTimeDateLabel(e) : false
+				})
+			)
+			setLastMsgsUserFirstName(() => {
+				var lastMsgParticipants = selectPrivateChatsLastMsgProperty('participant')
+				return lastMsgParticipants.map(e => selectMsgUser(e).firstName)
+			})
+		})
+	  return unsubscribe
+	}, [navigation])
 	
 	useEffect(() => {
 		let mounted = true
@@ -153,7 +212,6 @@ const PrivCListScreen = ({ navigation }) => {
 	    nodejs.channel.addListener(
 	      'message',
 	      (msg) => {
-	      	// console.log('PrivCList :: Listening for messages...')
 	      	if (msg.indexOf('ObjectId') != -1 && mounted) {
 	      		// console.log('SSH Push :: New message received')
 	      		pushMessages(msg)
@@ -266,7 +324,6 @@ const PrivCListScreen = ({ navigation }) => {
 
 					setLastMsgsContent(lastMsgsContent.map((e, i) => i === privCMsgIndex ?
 						lastPrivCMessage['content'] : e))
-
 					setLastMsgsCreatedAt(lastMsgsCreatedAt.map((e, i) => i === privCMsgIndex ?
 						dateToTimeDateLabel(lastPrivCMessage['createdAt']) : e))
 
@@ -281,7 +338,7 @@ const PrivCListScreen = ({ navigation }) => {
 			  	setPushing('success')
 			} catch (err) {
 				setPushing('fail')
-				console.log('PrivCList :: Pushing messages: ', err)
+				// console.log('PrivCList :: Pushing messages: ', err)
 			} finally {
 				setPushing('idle')
 				// console.log('PrivCList :: Pushing messages complete')
@@ -299,7 +356,6 @@ const PrivCListScreen = ({ navigation }) => {
 		lastMsgCreatedAt = lastMsgCreatedAt ? lastMsgCreatedAt : ''
 		let lastMsgUserFirstName = lastMsgsUserFirstName[index]
 		lastMsgUserFirstName = lastMsgUserFirstName ? `${lastMsgUserFirstName}: ` : ''
-
 		return(
 
 			<SectionListing onPress={() => navigation.push('PrivateChat-'+item.id, {id: item.id})} key={item.id}>
@@ -318,7 +374,7 @@ const PrivCListScreen = ({ navigation }) => {
 
 	return(
 		<>
-			<PrivCListHeader />
+			<PrivCListHeader navigation={navigation}  />
 			<Page>
 				<List
 					data={privateChats}
@@ -330,7 +386,7 @@ const PrivCListScreen = ({ navigation }) => {
 				</SectionListingContainer>
 			</Page>
 		</>
-	);
+	)
 }
 
 const PrivCList = ({ navigation }) => {

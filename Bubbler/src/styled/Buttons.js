@@ -17,7 +17,7 @@ const ButtonBase = styled.TouchableOpacity`
 	align-items: center;
 	align-content: center;
 	justify-content: center;
-	border-radius: 4px;
+	border-radius: 26px;
 `
 export const ButtonDefault = styled(ButtonBase)`
 	background-color: ${(props: StyledProps) => props.theme && props.theme.background.mainHighlight};
@@ -58,6 +58,13 @@ export const Icon = styled(Ionicons)`
 
 export const IconButton = styled(Ionicons)`
 	font-size: 26px;
+	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHighlight};
+`
+export const ClearButton = styled.TouchableOpacity`
+`
+
+export const ClearButtonTitle = styled.Text`
+	font-size: 18px;
 	color: ${(props: StyledProps) => props.theme && props.theme.color.mainHighlight};
 `
 

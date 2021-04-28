@@ -11,7 +11,7 @@ const initialState = {
 
 export const fetchPrivCMsgList = createAsyncThunk('privCMsgLists', async id => {
 	// accepts privCList ref from User
-
+	console.log('id',id)
 	var url = `http://localhost:8000/api/privc-msg-lists/${id}`
 	return await fetch(url)
 	    .then((response) => response.json())

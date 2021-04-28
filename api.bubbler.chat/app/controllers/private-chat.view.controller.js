@@ -124,6 +124,10 @@ exports.create = async (req, res) => {
 
 	var privCObj = {};
 
+	if (req.body._id) {
+		privCObj._id = req.sanitize(req.body._id);
+	}
+
 	if (req.body.title) {
 		privCObj.title = req.sanitize(req.body.title);
 	} else {
@@ -159,7 +163,6 @@ exports.create = async (req, res) => {
 
 	var privateChat = await createPrivateChat(privCObj, res);
 
-
 	// Notify participants !!!
 	if (!admin.privateChats) {
 
@@ -182,7 +185,6 @@ exports.create = async (req, res) => {
 		await findOneAndUpdatePrivCList(admin.privateChats, {
 			active: privCList.active
 		}, res);
-		var privCList2 = await findOnePrivCList(admin.privateChats, res);
 	}
 
 	res.json(privateChat);

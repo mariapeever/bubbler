@@ -9,6 +9,8 @@ import {
 	IconButtonTitle,
 	SectionButtonTitle,
 	IconButton,
+	ClearButton,
+	ClearButtonTitle,
 	IconBase
 } from './Buttons'
 
@@ -21,7 +23,10 @@ import {
 	Input, 
 	DateInput,
 	MessageInput,
-	InputBox
+	InputBox,
+	Toggle,
+	Label,
+	ToggleButton
 } from './Forms'
 
 import { 
@@ -61,7 +66,14 @@ import {
 	SectionListingDescription,
 	SectionListingLabel,
 	SectionListingContent,
-	SectionListingBorder
+	SectionListingBorder,
+	ModalContainer,
+	ModalHeader,
+	ModalBody,
+	ModalBox,
+	ModalButton,
+	ModalTitle,
+	Box,
 } from './Comps'
 
 export {
@@ -69,6 +81,9 @@ export {
 	ButtonDefault, 
 	ButtonTitle,
 	BottomToolbar,
+	Box,
+	ClearButton,
+	ClearButtonTitle,
 	DateInput,
 	Gradient,
 	Icon,
@@ -79,12 +94,19 @@ export {
 	InputBox,
 	Inner,
 	Loader,
+	Label,
 	List,
 	LightText,
 	LightTitle,
+	ModalBox,
 	MainContainer,
 	MessageBubble,
 	MessageInput,
+	ModalContainer,
+	ModalHeader,
+	ModalBody,
+	ModalButton,
+	ModalTitle,
 	Page, 
 	PageHeader,
 	PageTitle,
@@ -103,6 +125,8 @@ export {
 	SectionTitle,
 	Span,
 	Stream,
+	Toggle,
 	WhiteIcon,
-	WhiteText
+	WhiteText,
+	ToggleButton
 }

@@ -7,7 +7,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Wall } from '../wall'
 import { PrivCList } from '../privCList'
-import { Login } from '../auth'
 
 import { Settings } from '../settings'
 

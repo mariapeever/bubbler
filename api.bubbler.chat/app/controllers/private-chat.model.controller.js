@@ -3,8 +3,12 @@ const db = require("../models");
 const PrivateChat = db.privateChats;
 
 exports.createPrivateChat = async (obj, res) => {
+	obj._id = new db.mongoose.Types.ObjectId(obj._id);
+	console.log('Mongoose ID 1', obj._id)
+	console.log('obj',obj)
 	var privateChat = new PrivateChat(obj);
-
+	console.log('Mongoose ID 2',privateChat)
+	
 	return await privateChat.save()
 		.catch(err => {
 			return res.status(500).send({ message: err });

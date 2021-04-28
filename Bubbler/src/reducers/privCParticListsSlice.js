@@ -25,6 +25,7 @@ export const fetchPrivCParticList = createAsyncThunk('privCParticLists', async i
 const constructor = e => {
 	
 	return {
+		system: [ ...e.system ],
 		admin: [ ...e.admin ],
 		active: [ ...e.active ],
 		pending: [ ...e.pending ],
@@ -72,11 +73,12 @@ export const selectPrivCParticLists = () => currentState.privCParticLists
 
 export const selectPrivCParticListById = id => currentState.privCParticLists[id]
 
-export const selectPrivCParticList_Admin = id =>  currentState.privCParticLists[id].admin
-export const selectPrivCParticList_Active = id => currentState.privCParticLists[id].active
-export const selectPrivCParticList_Pending = id => currentState.privCParticLists[id].pending
-export const selectPrivCParticList_Inactive = id => currentState.privCParticLists[id].inactive
-export const selectPrivCParticList_Flagged = id => currentState.privCParticLists[id].flagged
-export const selectPrivCParticList_Blocked = id => currentState.privCParticLists[id].blocked
+export const selectPrivCParticList_System = id =>  currentState.privCParticLists[id] ? currentState.privCParticLists[id].system : []
+export const selectPrivCParticList_Admin = id => currentState.privCParticLists[id] ? currentState.privCParticLists[id].admin : []
+export const selectPrivCParticList_Active = id => currentState.privCParticLists[id] ? currentState.privCParticLists[id].active : []
+export const selectPrivCParticList_Pending = id => currentState.privCParticLists[id] ? currentState.privCParticLists[id].pending : []
+export const selectPrivCParticList_Inactive = id => currentState.privCParticLists[id] ? currentState.privCParticLists[id].inactive : []
+export const selectPrivCParticList_Flagged = id => currentState.privCParticLists[id] ? currentState.privCParticLists[id].flagged : []
+export const selectPrivCParticList_Blocked = id => currentState.privCParticLists[id] ? currentState.privCParticLists[id].blocked : []
 
 

@@ -36,6 +36,7 @@ exports.login = async (req, res) => {
 							return user
 						});
 					if (user) {
+						console.log('logged in', user)
 						res.json(user);
 					} else {
 						res.status(404).send({ message: 'User not found.' })

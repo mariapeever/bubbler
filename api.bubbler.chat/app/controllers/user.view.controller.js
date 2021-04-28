@@ -8,7 +8,8 @@ const {
 	findActiveUsers,
 	findOneAndUpdateUser,
 	findOneUserByUsername,
-	findOneAndDeleteUser 
+	findOneAndDeleteUser,
+	findUsersByRegex 
 } = require('./user.model.controller');
 
 const { createAuth } = require('./auth.model.controller');
@@ -51,15 +52,15 @@ exports.create = async (req, res) => {
 					mobile: privacy.MOBILE,
 					email: privacy.EMAIL
 				},
-		 	}, res);
-
-			
+		 	}, res);		
 
 			var auth = await createAuth({ 
 				user: user._id,
 				username: username,
 				password: hashedPassword
 			}, res);
+
+			user.username = auth.username
 
 			res.json({user});
 		});
@@ -80,6 +81,18 @@ exports.find = async (req, res) => {
 	ids.forEach(id => req.sanitize(id));
 
 	var users = await findUsers(ids, res);
+	res.json(users);
+};
+
+exports.findByRegex = async (req, res) => {
+	if (!req.params.regex) {
+		return res.status(400).send({
+			message: 'Query must not be empty.'
+		});
+	}
+	var regex = req.sanitize(req.params.regex);
+	
+	var users = await findUsersByRegex(regex, res);
 	res.json(users);
 };
 

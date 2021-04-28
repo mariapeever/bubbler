@@ -12,7 +12,6 @@ const status = ['active', 'pending', 'hidden', 'archived']
 
 export const fetchPrivCList = createAsyncThunk('privCList', async id => {
 	// accepts privCList ref from User
-	console.log(id)
 	var url = `http://localhost:8000/api/privc-lists/${id}`
 
 	return await fetch(url)
@@ -43,7 +42,6 @@ const preparePayload = (payload) => {
 			})
 		}
 	}
-
 	return { payload: 
 		{ [payload._id] : privCList }}
 }
@@ -62,6 +60,7 @@ export const privCListSlice = createSlice({
 		    	return preparePayload(payload)
 		    }
 		}
+
 	},
 
 	extraReducers:  {}
@@ -81,13 +80,14 @@ export const selectPrivCList = id => {
 }
 
 export const selectPrivCListParticipantByPrivCId = privCId => {
-
-	let entries = Object.entries(currentState.privCList[selectPrivCListId()])
+	var entries = currentState.privCList[selectPrivCListId()] ? 
+		Object.entries(currentState.privCList[selectPrivCListId()]) : []
 	for(let i = 0; i < entries.length; i++) {
 		let [key, value] = entries[i]
 		return (status.includes(key) && Object.keys(value).includes(privCId)) ? 
-			value[privCId].participant : '' 
+			value[privCId].participant : ''
 	}
+	return ''
 }
 
 export const selectPrivCListId = () => {

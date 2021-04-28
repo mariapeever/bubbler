@@ -8,7 +8,7 @@ const initialState = {
 	error: null
 }
 
-const status = ['admins','active','pending','inactive','flagged','blocked']
+const status = ['admin','system','active','pending','inactive','flagged','blocked']
 
 export const fetchPrivCParticipantsFromList = createAsyncThunk('PrivCParticipants', async privCParticList => {
 

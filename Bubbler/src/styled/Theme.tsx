@@ -20,6 +20,7 @@ export default {
     white: 'hsl(0, 100%, 100%)',
     fadedWhite: 'hsla(72, 45%, 98%, .9)',
 	light: 'hsl(233, 26%, 93%)',
+	lighter: 'hsl(233, 26%, 95%)',
 	mainHighlight: 'hsl(240, 77%, 58%)',
 	lighterMainHighlight: 'hsl(240, 86%, 72%)',
 	fadedMainHightlight: 'hsla(240, 86%, 72%, .7)',

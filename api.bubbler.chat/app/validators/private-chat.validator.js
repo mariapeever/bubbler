@@ -48,7 +48,7 @@ exports.create = [[
     .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('First name must be alphanumeric.'),
   check('description')
     .not().isEmpty().withMessage('Description must not be empty.')
-    .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('Last name must be alphanumeric.')],
+    .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('Description must be alphanumeric.')],
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

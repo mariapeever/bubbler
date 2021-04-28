@@ -48,4 +48,5 @@ export const Stream = styled.FlatList`
 export const List = styled.FlatList`
 	flex: 1;
 	align-content: flex-start;
+	width: 100%;
 `

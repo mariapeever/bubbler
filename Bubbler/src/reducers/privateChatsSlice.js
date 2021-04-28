@@ -1,8 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { selectPrivCLists } from './privCListSlice'
+
+import ObjectID from 'bson-objectid'
+
 
 const initialState = {
 	privateChats: {},
+	nextObjectID: '',
 	status: 'idle',
 	error: null
 }
@@ -26,7 +29,7 @@ export const fetchPrivateChatsFromList = createAsyncThunk('privateChats', async 
 })
 
 export const fetchPrivateChat = createAsyncThunk('privateChats', async id => {
-	var url = `http://localhost:8000/api/privateChats/${id}`
+	var url = `http://localhost:8000/api/private-chats/${id}`
 	return await fetch(url)
 	    .then(response => response.json())
 			.then(data => {
@@ -39,7 +42,7 @@ export const fetchPrivateChat = createAsyncThunk('privateChats', async id => {
 
 export const createPrivateChat = createAsyncThunk('privateChats', async privateChat => {
 	
-	return await fetch('http://localhost:8000/api/privateChats/', {
+	return await fetch('http://localhost:8000/api/private-chats/', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -57,7 +60,7 @@ export const createPrivateChat = createAsyncThunk('privateChats', async privateC
 })
 
 export const updatePrivateChat = createAsyncThunk('privateChats', async privateChat => {
-	var url = `http://localhost:8000/api/privateChats/update/${privateChat.id}`
+	var url = `http://localhost:8000/api/private-chats/update/${privateChat.id}`
 	
 	return await fetch(url, {
         method: 'PUT',
@@ -106,6 +109,8 @@ const preparePrivateChatsFromListPayload = (payload) => {
 const preparePrivateChatPayload = (payload) => {
 
 	var privateChat = Object.assign({}, constructor(payload))
+	// // console.log('privateChat payload', { payload: 
+		// { [payload._id] : privateChat }})
 	return { payload: 
 		{ [payload._id] : privateChat }}
 }
@@ -126,8 +131,7 @@ export const privateChatsSlice = createSlice({
 		},
 		privateChatFetched: {
 		    reducer(state, action) {
-		    	currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload.id } }
-
+		    	currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload } }
 		    },
 		    prepare(payload) {
 		    	return preparePrivateChatPayload(payload)
@@ -135,7 +139,7 @@ export const privateChatsSlice = createSlice({
 		},
 		privateChatAdded: {
 			reducer(state, action) {
-		      	currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload.id } }
+		      	currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload } }
 		    },
 		    prepare(payload) {
 		    	return preparePrivateChatPayload(payload)
@@ -143,7 +147,7 @@ export const privateChatsSlice = createSlice({
 		},
 		privateChatUpdated: {
 			reducer(state, action) {
-				currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload.id } }
+				currentState = { ...currentState, privateChats: { ...currentState.privateChats, ...action.payload } }
 			},
 			prepare(payload) {
 				return preparePrivateChatPayload(payload)
@@ -163,7 +167,8 @@ export const {
 	privateChatUpdated } = privateChatsSlice.actions
 
 export const selectPrivateChatById = id => {
-	return { ...currentState.privateChats[id], id: id } 
+	
+	return currentState.privateChats[id] ? { ...currentState.privateChats[id], id: id } : false
 }
 
 export const selectPrivateChats = () => {
@@ -175,9 +180,15 @@ export const selectPrivateChatsFromList = privCList => privCList.map(e => {
 	return { ...currentState.privateChats[e], id: e } 
 })
 
-export const selectPrivateChatById_UpdatedAt = id => currentState.privateChats[id] ?currentState.privateChats[id].updatedAt : ''
+export const selectPrivateChatById_UpdatedAt = id => currentState.privateChats[id] ? currentState.privateChats[id].updatedAt : ''
 
+export const genObjectID = () => {
+	currentState = { ...currentState, nextObjectID: ObjectID()} 
+}
 
+export const selectNextObjectID = () => {
+	return currentState.nextObjectID
+}
 
 
 

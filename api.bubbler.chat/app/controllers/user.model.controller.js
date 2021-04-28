@@ -50,6 +50,30 @@ exports.findOneUserByStatus = async (status, res) => {
 			});
 };
 
+exports.findUsersByRegex = async (regex, res) => {
+	var param = regex.split(' ')
+
+	var query = param.map(e => new RegExp(`\\.*${e}.*\\b`, 'gi'))
+	console.log('query',query)
+	return await User.find({ $or: [
+		{'firstName': { $in: query }}, 
+		{'lastName': { $in: query }}, 
+		{'email': { $in: query }},
+		{'mobile': { $in: query }} 
+	]}).limit(20)
+		.then(users  => { 
+			try {
+				if (!users) throw 'Users not found.';
+				return users;
+			} catch (err) {
+				return false;
+			}
+		})
+			.catch(err => {
+				res.status(500).send({ message: err });
+			});
+};
+
 exports.findUsers = async (ids, res) => {
 	
 	var cond = { _id: { $in: ids } };

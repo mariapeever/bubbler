@@ -53,6 +53,17 @@ exports.findOneByUsername = [
   }
 ];
 
+exports.findByRegex = [
+  param('regex').isLength({ min: 2, max: 60}).withMessage('Contact must be between 2 and 60 characters long.'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+    else next();
+  }
+];
+
 exports.create = [[
   check('firstName')
     .not().isEmpty().withMessage('First name must not be empty.')

@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 const initialState = {
 	users: {},
+	tmp: {},
 	status: 'idle',
 	error: null
 }
@@ -56,6 +57,20 @@ export const fetchUsersFromList = createAsyncThunk('user', async list => {
 	
 })
 
+export const fetchUsersByRegex = createAsyncThunk('user', async regex => {
+	
+	var url = `http://localhost:8000/api/users/regex/${regex}`
+	return await fetch(url)
+	    .then(response => response.json())
+			.then(data => {
+				return data
+			})
+				.catch(error =>{
+					console.error(error)
+				})
+	
+})
+
 export const createUser = createAsyncThunk('user', async user => {
 	
 	return await fetch('http://localhost:8000/api/users/', {
@@ -68,7 +83,6 @@ export const createUser = createAsyncThunk('user', async user => {
     })
 	    .then((response) => response.json())
 			.then((data) => {
-				console.log('data',data)
 				return data
 			})
 				.catch((error) =>{
@@ -166,6 +180,7 @@ const prepareUsersPayload = (payload) => {
 	payload.forEach(e => {
 		users[e._id] = constructor(e)
 	})
+
 	return { payload: users }
 }
 
@@ -178,6 +193,15 @@ export const usersSlice = createSlice({
 		usersFetchedFromList: {
 		    reducer(state, action) {
 		    	currentState = { ...currentState, users: { ...currentState.users, ...action.payload }}
+		    },
+		    prepare(payload) {
+
+		    	return prepareUsersPayload(payload)
+		    }
+		},
+		usersFetchedByRegex: {
+		    reducer(state, action) {
+		    	currentState = { ...currentState, tmp: action.payload }
 		    },
 		    prepare(payload) {
 
@@ -231,7 +255,7 @@ export const usersSlice = createSlice({
 
 export default usersSlice.reducer
 
-export const { userFetched, usersFetchedFromList, userAdded, userUpdated, userLoggedIn } = usersSlice.actions
+export const { userFetched, usersFetchedFromList, usersFetchedByRegex, userAdded, userUpdated, userLoggedIn } = usersSlice.actions
 
 export const selectUserId = () => Object.keys(currentState.users)[0]
 export const selectUser = () => {
@@ -254,3 +278,11 @@ export const selectUsers = () => {
 		return { ...value, id: key }
 	})
 }
+
+export const selectTmpUsers = () => {
+	return Object.entries(currentState.tmp).map(([key, value]) => {
+		return { ...value, id: key }
+	})
+}
+
+export const resetCurrentState_tmp = () => currentState.tmp = {}

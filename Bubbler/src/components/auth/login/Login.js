@@ -45,6 +45,7 @@ import {
 import { 
   fetchPrivCParticList,
   privCParticListFetched, 
+  selectPrivCParticList_System,
   selectPrivCParticList_Admin,
   selectPrivCParticList_Active, 
   selectPrivCParticList_Pending,
@@ -74,7 +75,7 @@ import LoginHeader from './LoginHeader'
 
 const LoginScreen = ({ navigation }) => {
   
-  const [username, setUsername] = useState('test36263237')
+  const [username, setUsername] = useState('test362634834793187')
   const [password, setPassword] = useState('1ehG8_423d')
 
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
@@ -189,6 +190,8 @@ const LoginScreen = ({ navigation }) => {
         ...selectPrivCList_Archived()
       ] : []
 
+      
+
       let loadedPrivateChats = await loadPrivateChats(privCList)
       
       let privateChats = loadedPrivateChats ? selectPrivateChats() : []
@@ -207,24 +210,26 @@ const LoginScreen = ({ navigation }) => {
             ...selectPrivCMsgList_Pending(msgListId),
             ...selectPrivCMsgList_Flagged(msgListId),
             ...selectPrivCMsgList_Removed(msgListId)
-          ] : false
+          ] : []
+
+
 
           let loadedPrivCMessages = await loadPrivCMessages(privCMsgList)
           // fetch private chat participants
           let particListId = chat.participantsList
 
           let loadedPrivCParticList = await loadPrivCParticList(particListId)
-          
           let privCParticList = []
 
           privCParticList = loadedPrivCParticList ? [
+            ...selectPrivCParticList_System(particListId),
             ...selectPrivCParticList_Admin(particListId),
             ...selectPrivCParticList_Active(particListId),
             ...selectPrivCParticList_Pending(particListId),
             ...selectPrivCParticList_Inactive(particListId),
             ...selectPrivCParticList_Flagged(particListId),
             ...selectPrivCParticList_Blocked(particListId),
-          ] : false
+          ] : []
           
           let loadedPrivCParticipants = await loadPrivCParticipants(privCParticList)
           
@@ -232,7 +237,7 @@ const LoginScreen = ({ navigation }) => {
             selectPrivCParticipants_Users(privCParticList) : []
 
           let loadedUsers = privCParticipants_Users.length ? 
-            await loadUsers(privCParticipants_Users) : false
+            await loadUsers(privCParticipants_Users) : []
         })
       }
     } catch (err) {
@@ -242,7 +247,6 @@ const LoginScreen = ({ navigation }) => {
     }
     
   }
-    
 
   const onUsernameChanged = e => setUsername(e)
   const onPasswordChanged = e => setPassword(e)
@@ -251,7 +255,7 @@ const LoginScreen = ({ navigation }) => {
     
   	if (canLogin) {
       try {
-        console.log('Login :: logging in...')
+        // console.log('Login :: logging in...')
         setAddRequestStatus('pending')
 
         const loginUser = await dispatch(
