@@ -5,17 +5,14 @@ module.exports = app => {
 	const privCParticipantsValidator = require('../validators/privc-participant.validator');
 	var router = require('express').Router();
 	
-	// Create a user
-	// Find users by ids
+	// Create a participant
+	// Find participants by ids
 	router.get('/find', utils.reqAuth, privCParticipantsValidator.find, privCParticipantsController.find);
-	// Find active users (accepts comma separated ids, e.g. ?ids=ID,ID)
-	// router.get('/active', utils.reqAuth, privateChatsValidator.findActive, privateChatsController.findActive);
-	// Find a single user by id
+	// Find a single participant by id
 	router.get('/:id', utils.reqAuth, privCParticipantsValidator.findOne, privCParticipantsController.findOne);
-	// Update a single user by id
+	// Update a single participant by id
 	router.put('/update/:id', utils.reqAuth, privCParticipantsValidator.updateOne, privCParticipantsController.updateOne);
 
 	// add routes
-
 	app.use('/api/privc-participants', router);
 };

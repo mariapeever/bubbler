@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { pure } from 'recompose'
+import React, { useState } from 'react'
 
 import { useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { StackActions } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
 
-import { Buffer } from 'buffer'
 import { 
   login, 
   selectUserId,
@@ -45,6 +42,7 @@ import {
 import { 
   fetchPrivCParticList,
   privCParticListFetched, 
+  selectPrivCParticList_System,
   selectPrivCParticList_Admin,
   selectPrivCParticList_Active, 
   selectPrivCParticList_Pending,
@@ -60,22 +58,24 @@ import {
 
 import { 
   InteractionManager,
-  Button } from 'react-native'
+  Button, Text } from 'react-native'
 
 import { ButtonDefault, 
          ButtonTitle,
          Inner,
          Page,
          Input, 
-         DateInput } from '../../../styled'
+         InputSm,
+         Logo,
+         AppTitle } from '../../../styled'
 
 import { Container } from '../../common'
 import LoginHeader from './LoginHeader'
 
 const LoginScreen = ({ navigation }) => {
   
-  const [username, setUsername] = useState('test36263237')
-  const [password, setPassword] = useState('1ehG8_423d')
+  const [username, setUsername] = useState('testuser1')
+  const [password, setPassword] = useState('=]-[0p9O')
 
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
@@ -90,6 +90,7 @@ const LoginScreen = ({ navigation }) => {
     const fetchedPrivCList = privCListId != '' ? 
       await dispatch(fetchPrivCList(privCListId))
               .then(unwrapResult) : false
+
     
     if (fetchedPrivCList) {
       dispatch(privCListFetched(fetchedPrivCList))
@@ -106,6 +107,7 @@ const LoginScreen = ({ navigation }) => {
 
     if (fetchedPrivateChats) {
       dispatch(privateChatsFetchedFromList(fetchedPrivateChats))
+      
       return true
     }
     return false
@@ -150,13 +152,11 @@ const LoginScreen = ({ navigation }) => {
   }
 
   const loadPrivCParticipants = async privCParticList  => {
-
     const fetchedPrivCParticipants = privCParticList.length ? 
       await dispatch(fetchPrivCParticipantsFromList(privCParticList))
               .then(unwrapResult) : false
-
     if (fetchedPrivCParticipants) {
-      dispatch(privCParticipantsFetchedFromList(fetchedPrivCParticipants))
+      var partic = await dispatch(privCParticipantsFetchedFromList(fetchedPrivCParticipants))
       return true
     }
     return false
@@ -166,9 +166,10 @@ const LoginScreen = ({ navigation }) => {
     const fetchedUsers = usersList.length ? 
       await dispatch(fetchUsersFromList(usersList))
               .then(unwrapResult) : false
-
+    // console.log('fetchedUsers 2',fetchedUsers)
     if (fetchedUsers) {
-      var usersFetched = await dispatch(usersFetchedFromList(fetchedUsers))
+      var users = await dispatch(usersFetchedFromList(fetchedUsers))
+      // console.log('users 2',users)
       return true
     }
     return false
@@ -177,9 +178,11 @@ const LoginScreen = ({ navigation }) => {
   const fetchAll = async () => {
     try {
       let user = selectUser()
+      // console.log('user',user)
       let pricCListId = user.privateChats
-
+      // console.log('pricCListId',pricCListId)
       let loadedPrivCList = await loadPrivCList(pricCListId)
+
       let privCList = {}
 
       privCList = loadedPrivCList ? [
@@ -189,13 +192,15 @@ const LoginScreen = ({ navigation }) => {
         ...selectPrivCList_Archived()
       ] : []
 
+
       let loadedPrivateChats = await loadPrivateChats(privCList)
-      
+      // console.log('loadedPrivateChats',loadedPrivateChats)
       let privateChats = loadedPrivateChats ? selectPrivateChats() : []
 
+      // console.log('privateChats',privateChats)
       if (privateChats.length) {
         privateChats.forEach(async chat => {
-
+        
           // Fetch private chat messages
           let msgListId = chat.messagesList
           let loadedPrivCMsgList = await loadPrivCMsgList(msgListId)
@@ -207,9 +212,10 @@ const LoginScreen = ({ navigation }) => {
             ...selectPrivCMsgList_Pending(msgListId),
             ...selectPrivCMsgList_Flagged(msgListId),
             ...selectPrivCMsgList_Removed(msgListId)
-          ] : false
+          ] : []
 
           let loadedPrivCMessages = await loadPrivCMessages(privCMsgList)
+          
           // fetch private chat participants
           let particListId = chat.participantsList
 
@@ -218,21 +224,25 @@ const LoginScreen = ({ navigation }) => {
           let privCParticList = []
 
           privCParticList = loadedPrivCParticList ? [
+            ...selectPrivCParticList_System(particListId),
             ...selectPrivCParticList_Admin(particListId),
             ...selectPrivCParticList_Active(particListId),
             ...selectPrivCParticList_Pending(particListId),
             ...selectPrivCParticList_Inactive(particListId),
             ...selectPrivCParticList_Flagged(particListId),
             ...selectPrivCParticList_Blocked(particListId),
-          ] : false
-          
+          ] : []
+
+          // console.log('privCParticList',privCParticList)
           let loadedPrivCParticipants = await loadPrivCParticipants(privCParticList)
           
           let privCParticipants_Users = loadedPrivCParticipants ? 
             selectPrivCParticipants_Users(privCParticList) : []
 
           let loadedUsers = privCParticipants_Users.length ? 
-            await loadUsers(privCParticipants_Users) : false
+            await loadUsers(privCParticipants_Users) : []
+
+            
         })
       }
     } catch (err) {
@@ -242,7 +252,6 @@ const LoginScreen = ({ navigation }) => {
     }
     
   }
-    
 
   const onUsernameChanged = e => setUsername(e)
   const onPasswordChanged = e => setPassword(e)
@@ -286,7 +295,11 @@ const LoginScreen = ({ navigation }) => {
   		
 			<Page>
         <Inner>
-  				<Input
+          <Logo
+            source={require('../../../assets/images/avatar.png')}
+          />
+          <AppTitle>Bubbler</AppTitle>
+  				<InputSm
   					id='username'
   					name='username'
   					value={username}
@@ -294,7 +307,7 @@ const LoginScreen = ({ navigation }) => {
   					textContentType='nickname'
   					onChangeText={onUsernameChanged}
   				/>
-  				<Input
+  				<InputSm
   					id='password'
   					value={password}
   					secureTextEntry={true}
@@ -323,3 +336,8 @@ const Login = ({ navigation }) => {
   )
 }
 export default Login
+
+
+
+
+

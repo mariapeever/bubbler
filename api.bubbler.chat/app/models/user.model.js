@@ -26,17 +26,17 @@ module.exports = mongoose => {
 			privateChats: { type: Schema.Types.ObjectId, ref: 'PrivateChatsList' },
 			liveChats: { type: Schema.Types.ObjectId, ref: 'LiveChatsList' },
 			calls: { type: Schema.Types.ObjectId, ref: 'CallsList' },
+			lastActiveAt: Date,
+  			deactivatedAt: Date,
+  			deletedAt: Date,
+  			archivedAt: Date,
+  			blockedAt: Date
 		},
 	  	{ 
 	  		timestamps: 
 	  		{ 
 	  			createdAt: 'createdAt', 
-	  			updatedAt: 'updatedAt',
-	  			lastActiveAt: Date,
-	  			deactivatedAt: Date,
-	  			deletedAt: Date,
-	  			archivedAt: Date,
-	  			blockedAt: Date,
+	  			updatedAt: 'updatedAt'
 	  		} 
 	  	}
 	);

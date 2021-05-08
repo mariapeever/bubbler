@@ -20,7 +20,7 @@ const store = configureStore({
 		privCParticLists: privCParticListsReducer,
 		privCParticipants: privCParticipantsReducer,
 	},
-	middleware: [...getDefaultMiddleware({immutableCheck: false})]
+	// middleware: [...getDefaultMiddleware({immutableCheck: false})]
 });
 
 export default store

@@ -37,6 +37,7 @@ const AccountSettingsMenuScreen = ({ navigation }) => {
 	const [firstName, setFirstName] = useState('')
 	const [lastName, setLastName] = useState('')
 	const [email, setEmail] = useState('')
+	const [mobile, setMobile] = useState('')
 
 	const dispatch = useDispatch()
 
@@ -47,6 +48,7 @@ const AccountSettingsMenuScreen = ({ navigation }) => {
 		setFirstName(user.firstName)
 		setLastName(user.lastName)
 		setEmail(user.email)
+		setMobile(user.mobile)
 	  })
 	  return unsubscribe
 	}, [navigation])
@@ -63,12 +65,9 @@ const AccountSettingsMenuScreen = ({ navigation }) => {
 				<SectionButton onPress={() => navigation.push('EditEmail')}>
 					<SectionButtonTitle>{email}</SectionButtonTitle>
 				</SectionButton>
-				<SectionButton onPress={() => navigation.push('EditEmail')}>
-					<SectionButtonTitle>Chat</SectionButtonTitle>
-				</SectionButton>
 				<SectionTitle>Mobile</SectionTitle>
 				<SectionButton onPress={() => navigation.navigate('EditMobile')}>
-					<SectionButtonTitle>Profile</SectionButtonTitle>
+					<SectionButtonTitle>{mobile}</SectionButtonTitle>
 				</SectionButton>
 			</Page>
 		</>

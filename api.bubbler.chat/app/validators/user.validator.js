@@ -1,13 +1,22 @@
-/**
-  * exports.find
-  * exports.findActive
-  * exports.findOne
-  * exports.findOneByUsername
-  * exports.create
-  * exports.update
-  * exports.deleteOne
-  */
-const {check, param, query, body, oneOf, validationResult} = require('express-validator');
+const {check, param, query, oneOf, validationResult} = require('express-validator');
+
+exports.create = [[
+  check('firstName')
+    .not().isEmpty().withMessage('First name must not be empty.')
+    .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('First name must be alphanumeric.'),
+  check('lastName')
+    .not().isEmpty().withMessage('Last name must not be empty.')
+    .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('Last name must be alphanumeric.'),
+  check('email').isEmail()],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors)
+      return res.status(422).json({ errors: errors.array() });
+    }
+    else next();
+  }
+];
 
 exports.find = [
   query('ids.*').isMongoId(),
@@ -53,26 +62,17 @@ exports.findOneByUsername = [
   }
 ];
 
-exports.create = [[
-  check('firstName')
-    .not().isEmpty().withMessage('First name must not be empty.')
-    .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('First name must be alphanumeric.'),
-  check('lastName')
-    .not().isEmpty().withMessage('Last name must not be empty.')
-    .matches(/^[a-zA-Z0-9\s.,`'\-]+$/, 'g').withMessage('Last name must be alphanumeric.'),
-  check('email').isEmail()],
+exports.findByRegex = [
+  param('regex').isLength({ min: 2, max: 60}).withMessage('Contact must be between 2 and 60 characters long.'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+        return res.status(422).json({ errors: errors.array() });
     }
     else next();
   }
 ];
 
-
-// authsValidator.register
-// add password must not be the same as prev
 exports.updateOne = [[
   param('id').isMongoId(),
   check('firstName')
@@ -93,3 +93,39 @@ exports.updateOne = [[
         else next();
     }
 ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

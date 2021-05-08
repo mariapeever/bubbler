@@ -42,3 +42,9 @@ export const BodyText = styled(Body)`
 export const DarkText = styled(Body)`
 	color: ${props => props.self ? props.theme.color.white : props.theme.color.body};
 `
+
+export const AppTitle = styled.Text`
+	font-size: 36px;
+	font-weight: 200;
+	margin: 13px 0 42px;
+`

@@ -7,24 +7,22 @@ const {
 	findOneUser,
 	findActiveUsers,
 	findOneAndUpdateUser,
-	findOneUserByUsername,
-	findOneAndDeleteUser 
+	findOneAndDeleteUser,
+	findUsersByRegex 
 } = require('./user.model.controller');
 
-const { createAuth } = require('./auth.model.controller');
+const { createAuth, findOneAuthByUsername } = require('./auth.model.controller');
 
 exports.create = async (req, res) => {
-
 	var username = req.sanitize(req.body.username);
-	var checkExistingUsername = await findOneUserByUsername(username, res);
-	console.log('checkExistingUsername',checkExistingUsername)
+	var checkExistingUsername = await findOneAuthByUsername(username, res);
+	
 	if (!checkExistingUsername) {
 		var plainPassword = req.sanitize(req.body.password);
 	
 		const bcrypt = require('bcrypt');
 	  	const saltRounds = 10;
 
-	 	// hash the password and save user data
 		bcrypt.hash(plainPassword, saltRounds, async (err, hashedPassword) => {
 			if (err) throw err;
 
@@ -33,7 +31,6 @@ exports.create = async (req, res) => {
 			var email = req.sanitize(req.body.email);
 			var mobile = req.body.mobile ? req.sanitize(req.body.mobile) : "";
 			var dob = req.sanitize(req.body.dob);
-			// var image =
 			var privacy = config.PRIVACY.USER
 
 			var user = await createUser({ 
@@ -51,9 +48,7 @@ exports.create = async (req, res) => {
 					mobile: privacy.MOBILE,
 					email: privacy.EMAIL
 				},
-		 	}, res);
-
-			
+		 	}, res);		
 
 			var auth = await createAuth({ 
 				user: user._id,
@@ -61,6 +56,7 @@ exports.create = async (req, res) => {
 				password: hashedPassword
 			}, res);
 
+			user.username = auth.username
 			res.json({user});
 		});
 	} else {
@@ -70,31 +66,28 @@ exports.create = async (req, res) => {
 };
 
 exports.find = async (req, res) => {
-	if (!req.query.ids) {
-		return res.status(400).send({
-			message: 'Ids must not be empty.'
-		});
-	}
-	var ids = req.query.ids;
+	var ids = req.sanitize(req.query.ids);
 	ids = ids.split(',');
-	ids.forEach(id => req.sanitize(id));
 
 	var users = await findUsers(ids, res);
 	res.json(users);
 };
 
+exports.findByRegex = async (req, res) => {
+
+	var regex = req.sanitize(req.params.regex);
+	var regex = regex.split(' ')
+	var users = await findUsersByRegex(regex, res);
+	res.json(users);
+};
+
 exports.findActive = async (req, res) => {
-	if(!req.query.ids) {
-		return res.status(400).send({
-			message: 'Ids must not be empty.'
-		});
-	}
-	// http://localhost:8000/api/messages/?ids=[6046b4e99b66b743c77ec61c,604592bc897342ee706ff513]
+
 	var ids = req.query.ids;
 	ids = ids.split(',');
 	ids.forEach(id => req.sanitize(id));
 
-	var cond = { _id: { $in: ids }, status: "active" }; //  'content': { $regex: new RegExp(kwrd), $options: “i” } 
+	var cond = { _id: { $in: ids }, status: "active" }; 
 	var users = await findActiveUsers(ids, res);
 	res.json(users);
 };
@@ -110,7 +103,6 @@ exports.findOne = async (req, res) => {
 exports.updateOne = async (req, res) => {
 
 	var userObj = {};
-	// sanitize
 	for (let [key, val] of Object.entries(req.body)) {
 		if(config.FIELDS.USER.includes(key)) {
 			userObj[key] = req.sanitize(val);

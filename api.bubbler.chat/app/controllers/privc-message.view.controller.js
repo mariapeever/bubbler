@@ -68,9 +68,8 @@ exports.findOne = async (req, res) => {
 
 exports.find = async (req, res) => {
 	
-	var ids = req.query.ids;
+	var ids = req.sanitize(req.query.ids);
 	ids = ids.split(',');
-	ids.forEach(id => req.sanitize(id));
 
 	var privCMessages = await findPrivCMessages(ids, res);
 	res.json(privCMessages);
@@ -91,4 +90,41 @@ exports.updateOne = async (req, res) => {
 
 	res.json(privCMessage);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

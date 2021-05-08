@@ -6,22 +6,21 @@ module.exports = mongoose => {
 			
 			user: { type: Schema.Types.ObjectId, ref: 'User' },
 			role: { type: Schema.Types.ObjectId, ref: 'Role' },
-			addedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+			addedBy: { type: Schema.Types.ObjectId, ref: 'Participant' },
 			flaggedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 			blockedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 			removedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 			status: String, // active, inactive, deleted, blocked
-			messagesList: { type: Schema.Types.ObjectId, ref: 'PrivCParticMsgList' }
+			lastActiveAt: Date,
+  			flaggedAt: [Date],
+  			deactivatedAt: Date,
+  			blockedAt: Date
 		},
 	  	{ 
 	  		timestamps: 
 	  		{ 
 	  			createdAt: 'createdAt', 
-	  			updatedAt: 'updatedAt',
-	  			lastActive: Date,
-	  			flagged: [Date],
-	  			deactivated: Date,
-	  			blocked: Date
+	  			updatedAt: 'updatedAt'
 	  		} 
 	  	}
 	);

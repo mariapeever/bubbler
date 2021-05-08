@@ -1,4 +1,3 @@
-// Private chat messages list model controller
 const db = require('../models');
 const PrivCMsgList = db.privCMsgLists;
 
@@ -40,3 +39,39 @@ exports.findOneAndUpdatePrivCMsgList = async (id, obj, res) => {
 				res.status(500).send({ message: err });
 			});
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

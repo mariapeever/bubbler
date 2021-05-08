@@ -1,5 +1,5 @@
 
-const {check, query, param, oneOf, validationResult} = require('express-validator');
+const {query, param, validationResult} = require('express-validator');
 
 exports.find = [
   query('ids.*').isMongoId(),
@@ -23,9 +23,9 @@ exports.findOne = [
   }
 ];
 
-// authsValidator.register
-// add password must not be the same as prev
-exports.updateOne = [param('id').isMongoId(),
+exports.updateOne = [
+  param('id').isMongoId(),
+
   (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

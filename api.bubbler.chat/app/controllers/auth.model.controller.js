@@ -77,3 +77,37 @@ exports.findOneAndDeleteAuth = async (id, res) => {
 };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

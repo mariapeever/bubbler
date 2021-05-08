@@ -1,5 +1,5 @@
 
-const {param, oneOf, validationResult} = require('express-validator');
+const {param, validationResult} = require('express-validator');
 
 
 exports.findOne = [param('id').isMongoId(),

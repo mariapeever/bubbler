@@ -24,10 +24,7 @@ module.exports = mongoose => {
 	  		timestamps: 
 	  		{ 
 	  			createdAt: 'createdAt', 
-	  			updatedAt: 'updatedAt',
-	  			sent: Date,
-	  			received: Date,
-	  			seen: Date
+	  			updatedAt: 'updatedAt'
 	  		} 
 	  	}
 	);

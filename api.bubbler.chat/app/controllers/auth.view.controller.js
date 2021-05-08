@@ -6,14 +6,13 @@ const {
 	findOneAndDeleteAuth
 } = require("./auth.model.controller");
 
-const { findOneUser,
-				findOneAndDeleteUser } = require("./user.model.controller");
+const { 
+	findOneUser,
+	findOneAndDeleteUser } = require("./user.model.controller");
 
 exports.login = async (req, res) => {
-	
 	var username = req.sanitize(req.body.username);
 	var auth = await findOneAuthByUsername(username, res);
-	
 	if (auth) {
 
 		const bcrypt = require('bcrypt');
@@ -28,22 +27,21 @@ exports.login = async (req, res) => {
 				} else {
 					req.session.authId = auth._id;
 					// const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-				// 	console.log(ip); // ip address of the user
 
 					var user = await findOneUser(auth.user)
 						.then(user => {
-							user._doc.username = auth.username
-							return user
+							user._doc.username = auth.username;
+							return user;
 						});
 					if (user) {
 						res.json(user);
 					} else {
-						res.status(404).send({ message: 'User not found.' })
+						res.status(404).send({ message: 'User not found.' });
 					}
 				}
 		});
 	} else {
-		res.status(404).json({ message: 'Username not found.' })
+		res.status(404).json({ message: 'Username not found.' });
 	}
 	
 };
@@ -53,7 +51,7 @@ exports.logout = (req, res) => {
 	// delete nonce_tokens.userId;
 	req.session.destroy(err => {
 		try {
-			res.send('Logged out.');
+			res.json('Logged out.');
 		} catch (err) {
 			res.status(500).json({ message: 'Error.' });
 		}
@@ -65,12 +63,11 @@ exports.findOne = async (req, res) => {
 	var id = req.sanitize(req.params.id);
 	var auth = await findOneAuth(id, res);
 	try {
-		if (!auth) throw 'Account not found'
+		if (!auth) throw 'Account not found';
 		res.json(auth);
 	} catch (err) {
-		res.status(404).json({ message: err })
+		res.status(404).json({ message: err });
 	}
-	
 };
 
 exports.updateOne = async (req, res) => {
@@ -92,7 +89,7 @@ exports.updateOne = async (req, res) => {
 			if (!auth) throw 'Account not found.'
 			res.json(auth);
 		} catch (err) {
-			res.status(404).json({ message: err })
+			res.status(404).json({ message: err });
 		}
 		
 	});
@@ -111,3 +108,45 @@ exports.deleteOne = async (req, res) => {
 	}
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

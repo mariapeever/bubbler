@@ -29,19 +29,7 @@ exports.create = [[
 ];
 
 exports.login = [[
-	check('username').isLength({ min: 6, max: 30 }).withMessage('Username must between 6 and 30 characters long.'),
   check('password').not().isEmpty().withMessage('Password must not be empty.')],
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-    }
-    else next();
-  }
-];
-
-exports.findOneByUsername = [
-	check('username').isLength({ min: 6, max: 30}).withMessage('Username must between 6 and 30 characters long.'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -105,3 +93,58 @@ exports.deleteOne = [
     else next();
   }
 ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

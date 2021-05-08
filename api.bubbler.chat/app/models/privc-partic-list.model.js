@@ -4,6 +4,7 @@ module.exports = mongoose => {
 	var privCParticListSchema = new Schema(
 		{	
 			admin: [{ type: Schema.Types.ObjectId, ref: 'PrivCParticipant' }],
+			system: [{ type: Schema.Types.ObjectId, ref: 'PrivCParticipant' }],
 			active: [{ type: Schema.Types.ObjectId, ref: 'PrivCParticipant' }],
 			pending: [{ type: Schema.Types.ObjectId, ref: 'PrivCParticipant' }],
 			inactive: [{ type: Schema.Types.ObjectId, ref: 'PrivCParticipant' }],
@@ -14,8 +15,7 @@ module.exports = mongoose => {
 	  		timestamps: 
 	  		{ 
 	  			createdAt: 'createdAt', 
-	  			updatedAt: 'updatedAt',
-	  			deletedAt: Date
+	  			updatedAt: 'updatedAt'
 	  		} 
 	  	}
 	);

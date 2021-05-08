@@ -8,15 +8,15 @@ module.exports = mongoose => {
 			username: String,
 	    	password: String,
 	    	passwordStrength: Number, // calc password strength
-	    	attempts: Number // login attempts
+	    	attempts: Number, // login attempts
+	    	lockedOutAt: Date,
+	  		deactivatedAt: Date,
 		},
 	  	{ 
 	  		timestamps: 
 	  		{ 
 	  			createdAt: 'createdAt', 
-	  			updatedAt: 'updatedAt',
-	  			lockedOut: Date,
-	  			deactivated: Date,
+	  			updatedAt: 'updatedAt'
 	  		} 
 	  	}
 	);

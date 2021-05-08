@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { selectUserId } from './usersSlice'
+import { selectUserId, selectUserById } from './usersSlice'
 import { selectPrivCParticListById } from './privCParticListsSlice'
 
 const initialState = {
@@ -8,18 +8,16 @@ const initialState = {
 	error: null
 }
 
-const status = ['admins','active','pending','inactive','flagged','blocked']
+const status = ['admin','system','active','pending','inactive','flagged','blocked']
 
 export const fetchPrivCParticipantsFromList = createAsyncThunk('PrivCParticipants', async privCParticList => {
 
 	let ids = privCParticList.toString()
-
 	var url = `http://localhost:8000/api/privc-participants/find?ids=${ids}`
 
 	return privCParticipants = await fetch(url)
 	    .then(response => response.json())
 			.then(data => {
-
 				return data
 			})
 				.catch(error =>{
@@ -165,6 +163,16 @@ export const selectPrivCParticipants_Users = () => {
 	return Object.values(currentState.privCParticipants)
 		.map(e => e.user)
 			.filter(e => e != selectUserId())
+}
+
+export const selectParticipantsFromList_Users = particList => {
+	
+	return Object.entries(currentState.privCParticipants)
+		.filter(([key, value]) => particList.includes(key))
+			.map(([key, value]) => value.user)
+				.filter(e => e != selectUserId())
+					.map(e => selectUserById(e))
+	
 }
 
 export const selectPrivCParticipants = () => {

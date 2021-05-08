@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
-import { pure } from 'recompose'
-import { useSelector, useDispatch } from 'react-redux'
 
+import { useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
-
 import { StackActions } from '@react-navigation/native'
 
 import { userAdded, createUser, selectUser } from '../../../reducers/usersSlice'
@@ -22,15 +20,14 @@ import SignUpHeader from './SignUpHeader'
 
 const SignUpScreen = ({ navigation }) => {
   
-  const user = useSelector(state => state.user)
-  const [firstName, setFirstName] = useState('Test')
-  const [lastName, setLastName] = useState('User')
-  const [email, setEmail] = useState('test@email.com')
-  const [dob, setDob] = useState(new Date(1598051730000).toJSON())
-  const [mobile, setMobile] = useState('078626575576')
-  const [username, setUsername] = useState('test36263237')
-  const [password, setPassword] = useState('1ehG8_423d')
-  const [rePassword, setRePassword] = useState('1ehG8_423d')
+  const [firstName, setFirstName] = useState('test1')
+  const [lastName, setLastName] = useState('test1')
+  const [email, setEmail] = useState('test1@gmail.com')
+  const [dob, setDob] = useState(new Date(628021800000).toJSON())
+  const [mobile, setMobile] = useState('07862062440')
+  const [username, setUsername] = useState('testuser1')
+  const [password, setPassword] = useState('=]-[0p9O')
+  const [rePassword, setRePassword] = useState('=]-[0p9O')
 
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
@@ -72,6 +69,7 @@ const SignUpScreen = ({ navigation }) => {
             password
           })
         )
+        // console.log('resultAction',resultAction)
         setAddRequestStatus('success')
         unwrapResult(resultAction)
         dispatch(
@@ -187,3 +185,63 @@ const SignUp = ({ navigation }) => {
   )
 }
 export default SignUp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

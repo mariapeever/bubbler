@@ -1,4 +1,3 @@
-// Private chat mesasge view controller
 const { 
 	findOnePrivCParticipant,
 	findPrivCParticipants,
@@ -37,4 +36,39 @@ exports.updateOne = async (req, res) => {
 
 	res.json(privCParticipant);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

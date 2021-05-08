@@ -10,6 +10,7 @@ exports.createPrivCMessage = async (obj, res) => {
 		});
 };
 
+
 exports.findOnePrivCMessage = async (id, res) => {
 	
 	return await PrivCMessage.findById(id)
@@ -29,8 +30,7 @@ exports.findOnePrivCMessage = async (id, res) => {
 exports.findPrivCMessages = async (ids, res) => {
 	var cond = { _id: { $in: ids } };
 	return await PrivCMessage.find(cond)
-	.sort({'date': -1})
-		// .limit(10)
+	.sort({'date': -1}).limit(20)
 		.then(msgs => {
 			try {
 				if (!msgs) throw 'Private chat messages not found.';

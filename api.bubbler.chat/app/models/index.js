@@ -6,6 +6,7 @@ var dbConfig = require('../config/db.config');
 const db = {};
 db.mongoose = mongoose;
 db.url = dbConfig.url;
+db.ObjectId = mongoose.Object
 
 db.auths = require("./auth.model")(mongoose)
 // db.authzs = require("./authz.model")(mongoose)

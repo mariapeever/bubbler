@@ -12,8 +12,10 @@ module.exports = app => {
 
 	// Create a user
 	router.post('/', [authsValidator.create, usersValidator.create], usersController.create);
-	// Find users by ids
+	// Find users by id
 	router.get('/find', utils.reqAuth, usersValidator.find, usersController.find);
+
+	router.get('/regex/:regex', utils.reqAuth, usersValidator.findByRegex, usersController.findByRegex);
 	// Find active users (accepts comma separated ids, e.g. ?ids=ID,ID)
 	router.get('/active', utils.reqAuth, usersValidator.findActive, usersController.findActive);
 	// Find a single user by id

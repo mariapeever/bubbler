@@ -39,8 +39,6 @@ exports.findOne = [
   }
 ];
 
-// authsValidator.register
-// add password must not be the same as prev
 exports.updateOne = [[
   param('id').isMongoId(),
   oneOf([
@@ -58,3 +56,38 @@ exports.updateOne = [[
         else next();
     }
 ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -18,7 +18,6 @@ module.exports = mongoose => {
 			taggedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 			reactions: [{ type: Schema.Types.ObjectId, ref: 'Reaction' }],
 			shares: [{ type: Schema.Types.ObjectId, ref: 'Share' }],
-			comments: { type: Schema.Types.ObjectId, ref: 'Comments' }
 		},
 	  	{ 
 	  		timestamps: 

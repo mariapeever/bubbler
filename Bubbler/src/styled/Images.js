@@ -12,13 +12,19 @@ interface StyledProps {
 
 export const SectionListingImage = styled.Image`
 	align-self: center;
-	width: 52px;
-	height: 52px;
+	width: ${props => props.size === 'sm' ? '39px' : '52px'};
+	height: ${props => props.size === 'sm' ? '39px' : '52px'};
 	border-radius: 999px;
 `
 
 export const Avatar = styled(SectionListingImage)`
 	
+`
+
+export const Logo = styled.Image`
+	width: 91px;
+	height: 91px;
+	margin-bottom: 13px;
 `
 
 

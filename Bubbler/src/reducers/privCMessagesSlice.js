@@ -128,6 +128,7 @@ export const privCMessagesSlice = createSlice({
 	name: 'privCMessages',
 	initialState,
 	reducers: {
+
 		privCMessagesFetchedFromList: {
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCMessages: { ...currentState.privCMessages, ...action.payload }}
@@ -136,6 +137,7 @@ export const privCMessagesSlice = createSlice({
 		    	return preparePrivCMessagesFromListPayload(payload)
 		    }
 		},
+
 		privCMessageFetched: {
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCMessages: { ...currentState.privCMessages, ...action.payload } }
@@ -190,6 +192,11 @@ export const selectLastMessageFromList = privCMsgList => {
 	let id = privCMsgList.length ? privCMsgList[privCMsgList.length - 1] : false
 	return id ? snglMsgConstructor(id) : false
 }
+
+
+
+
+
 
 
 

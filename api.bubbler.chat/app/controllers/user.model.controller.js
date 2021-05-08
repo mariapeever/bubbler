@@ -18,9 +18,25 @@ exports.findOneUser = async (id, res) => {
 			});
 };
 
-exports.findOneUserByUsername = async (username, res) => {
+// exports.findOneUserByUsername = async (username, res) => {
 
-	return await User.findOne({ username: username})
+// 	return await User.findOne({ username: username })
+// 		.then(user  => { 
+// 			try {
+// 				if (!user) throw 'User not found.';
+// 				return user;
+// 			} catch (err) {
+// 				return false;
+// 			}
+// 		})
+// 			.catch(err => {
+// 				res.status(500).send({ message: err });
+// 			});
+// };
+
+exports.findOneUserByStatus = async (status, res) => {
+
+	return await User.findOne({ status: status})
 		.then(user  => { 
 			try {
 				if (!user) throw 'User not found.';
@@ -34,13 +50,20 @@ exports.findOneUserByUsername = async (username, res) => {
 			});
 };
 
-exports.findOneUserByStatus = async (status, res) => {
+exports.findUsersByRegex = async (regex, res) => {
+	
+	var query = regex.map(e => new RegExp(`\\.*${e}.*\\b`, 'gi'))
 
-	return await User.findOne({ status: status})
-		.then(user  => { 
+	return await User.find({ $or: [
+		{'firstName': { $in: query }}, 
+		{'lastName': { $in: query }}, 
+		{'email': { $in: query }},
+		{'mobile': { $in: query }} 
+	]}).limit(20)
+		.then(users  => { 
 			try {
-				if (!user) throw 'User not found.';
-				return user;
+				if (!users) throw 'Users not found.';
+				return users;
 			} catch (err) {
 				return false;
 			}
@@ -126,3 +149,39 @@ exports.findOneAndDeleteUser = async (id, res) => {
 				res.status(500).send({ message: err });
 			});
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

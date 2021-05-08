@@ -11,7 +11,6 @@ const initialState = {
 
 export const fetchPrivCMsgList = createAsyncThunk('privCMsgLists', async id => {
 	// accepts privCList ref from User
-
 	var url = `http://localhost:8000/api/privc-msg-lists/${id}`
 	return await fetch(url)
 	    .then((response) => response.json())
@@ -35,7 +34,6 @@ const constructor = e => {
 }
 
 const prepareFetchPayload = payload => {
-	
 	var privCMsgList = {}
 	privCMsgList[payload._id] = constructor(payload)
 
@@ -48,18 +46,15 @@ const prepareSSHPushPayload = payload => {
 
 	var string = ['createdAt','updatedAt']
 	var array = ['ok','flagged','removed']
-	// var payload = payload.replace(/^.*?{/, "{")
 
 	var regex = /\(*\)*[^\w\d:(\d+-\d.),]*(ObjectId)*(ISODate)*/g
 
 	payload = payload.replaceAll(regex, '')
-
 	payload = payload.replaceAll('_id', '^_id')
-
 	payload = payload.split('^')
 	payload.shift()
-	var privCMsgLists = {}
 
+	var privCMsgLists = {}
 	var limit = 20
 
 	payload = payload.forEach(e => {
@@ -92,12 +87,10 @@ const prepareSSHPushPayload = payload => {
 				_id = substr
 			}
 		}
-		
 		privCMsgLists[_id] = privCMsgList
 		privCMsgLists[_id].pending = []
 	})
-	return { payload : privCMsgLists }
-		
+	return { payload : privCMsgLists }		
 }
 
 const prepareOneSSHPushPayload = payload => {
@@ -160,6 +153,7 @@ export const privCMsgListsSlice = createSlice({
 		    	return prepareFetchPayload(payload)
 		    }
 		},
+
 		onePrivCMsgListPushed: {
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCMsgLists: { ...currentState.privCMsgLists, ...action.payload }}
@@ -168,12 +162,12 @@ export const privCMsgListsSlice = createSlice({
 		    	return prepareOneSSHPushPayload(payload)
 		    }
 		},
+		
 		privCMsgListsPushed: {
 		    reducer(state, action) {
 		    	currentState = { ...currentState, privCMsgLists: { ...currentState.privCMsgLists, ...action.payload }}
 		    },
 		    prepare(payload) {
-
 		    	return prepareSSHPushPayload(payload)
 		    }
 		}
@@ -195,5 +189,22 @@ export const selectPrivCMsgList_Flagged = id => currentState.privCMsgLists[id] ?
 export const selectPrivCMsgList_Removed = id => currentState.privCMsgLists[id] ? currentState.privCMsgLists[id].removed : []
 
 export const selectPrivCMsgListById_UpdatedAt = id => currentState.privCMsgLists[id] ? currentState.privCMsgLists[id].updatedAt : ''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

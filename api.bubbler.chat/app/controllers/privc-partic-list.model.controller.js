@@ -46,3 +46,34 @@ exports.findOneAndUpdatePrivCParticList = async (id, obj, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
